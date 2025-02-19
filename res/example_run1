@@ -1,0 +1,55 @@
+Welcome to Kill Doctor Lucky!
+World Loaded!
+Mansion has been built successfully!
+
+=== Help Menu ===
+move   - Moves your player to an adjacent room. You will be shown valid neighbor rooms.
+pickup - Picks up an item from the current room. The room's available items are listed.
+attack - Attacks Doctor Lucky using a weapon from your inventory. Make sure you have picked up a valid weapon.
+help   - Displays this help menu with instructions for each command.
+quit   - Exits the game.
+Note: Commands and item/space names are case-insensitive. Make sure you are in the correct room to pick up a specific item.
+=================
+
+You are in: Armory
+Your Items: []
+Doctor Lucky's HP: 50
+Available commands: move, pickup, attack, help, quit
+Enter command: pickup
+Items in this room: [Revolver, Letter Opener]
+Enter item name to pick up (type exactly one of the listed items): Revolver
+Picked up: Revolver
+
+You are in: Armory
+Your Items: [Revolver]
+Doctor Lucky's HP: 50
+Available commands: move, pickup, attack, help, quit
+Enter command: move
+Valid neighbors: [Billiard Room, Kitchen]
+Enter space name to move to (type exactly one of the valid neighbors): Kitchen
+
+You are in: Kitchen
+Your Items: [Revolver]
+Doctor Lucky's HP: 50
+Available commands: move, pickup, attack, help, quit
+Enter command: attack
+Your current inventory: [Revolver]
+Enter weapon name to attack Doctor Lucky (choose one from your inventory): Revolver
+Alice attacked Doctor Lucky with Revolver!
+Doctor Lucky now has 40 HP left.
+Doctor Lucky moved to: Dining Hall
+
+You are in: Dining Hall
+Your Items: [Revolver]
+Doctor Lucky's HP: 40
+Available commands: move, pickup, attack, help, quit
+Enter command: attack
+Your current inventory: [Revolver]
+Enter weapon name to attack Doctor Lucky (choose one from your inventory): Revolver
+Alice attacked Doctor Lucky with Revolver!
+Doctor Lucky now has 30 HP left.
+Doctor Lucky moved to: Drawing Room
+
+... (continue the session until the game ends)
+
+Game Over! Alice won by killing Doctor Lucky!
