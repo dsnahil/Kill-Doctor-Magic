@@ -9,10 +9,10 @@ A text-based game where players navigate a mansion, pick up weapons, and attempt
 
 ## Example Runs
 
-- **Example Run 1 (res/example_run1.txt):
+- Example Run 1 (res/example_run1.txt):
   This file demonstrates a complete game session where the player picks up items, moves between spaces, and attacks Doctor Lucky until the game ends. Key functionalities such as movement, item pickup, and attack are showcased.
 
-- Example Run 2 (optional, if you create more):  
+- Example Run 2 :  
   This run could show an edge case or alternate scenario, like failing to pick up an item or attacking without a weapon.
 
 ## Commands
