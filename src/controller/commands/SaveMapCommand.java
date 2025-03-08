@@ -1,12 +1,11 @@
 package controller.commands;
 
-import killdoctorlucky.model.Iworld;
+import controller.Icommand;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-
-import controller.Icommand;
+import killdoctorlucky.model.Iworld;
 
 /**
  * Command to generate and save the world map as a PNG file.
@@ -14,6 +13,9 @@ import controller.Icommand;
 public class SaveMapCommand implements Icommand {
   private final String fileName;
 
+  /**
+   * Command to generate and save the world map as a PNG file.
+   */
   public SaveMapCommand(String fileName) {
     this.fileName = fileName;
   }

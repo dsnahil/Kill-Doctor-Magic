@@ -50,11 +50,17 @@ public class World implements Iworld {
       }
       // Limit split to 3 parts so that worldName can contain spaces
       String[] worldDetails = line.trim().split("\\s+", 3);
-      if (worldDetails.length < 3) {
-        throw new IOException("Invalid world details format in " + filePath);
+      if (worldDetails.length != 3) {
+        throw new IOException("Expected 3 tokens for world details, found " + worldDetails.length
+            + " in " + filePath);
       }
-      rows = Integer.parseInt(worldDetails[0]);
-      cols = Integer.parseInt(worldDetails[1]);
+      try {
+        rows = Integer.parseInt(worldDetails[0]);
+        cols = Integer.parseInt(worldDetails[1]);
+      } catch (NumberFormatException e) {
+        throw new IOException(
+            "Rows and columns must be integers in world details: " + e.getMessage());
+      }
 
       // Read target character details
       line = br.readLine();
@@ -221,10 +227,19 @@ public class World implements Iworld {
     StringBuilder sb = new StringBuilder();
     sb.append("Space: ").append(s.getSpaceName()).append("\n").append("Items: ")
         .append(s.getItems()).append("\n").append("Neighbors: ").append(s.getNeighbors())
-        .append("\n").append("Visible Spaces: ").append(s.getNeighbors()).append("\n")
-        .append("Coordinates: [").append(s.getUpperRow()).append(", ").append(s.getUpperColumn())
-        .append("] to [").append(s.getLowerRow()).append(", ").append(s.getLowerColumn())
-        .append("]");
+        .append("\n").append("Coordinates: [").append(s.getUpperRow()).append(", ")
+        .append(s.getUpperColumn()).append("] to [").append(s.getLowerRow()).append(", ")
+        .append(s.getLowerColumn()).append("]");
+
+    // New code: list players present in this space.
+    List<String> playersInSpace = new ArrayList<>();
+    for (Iplayer player : getPlayers()) {
+      if (player.getPlayerLocation().getSpaceName().equalsIgnoreCase(s.getSpaceName())) {
+        playersInSpace.add(player.getPlayerName());
+      }
+    }
+    sb.append("\nPlayers Present: ").append(playersInSpace);
+
     return sb.toString();
   }
 

@@ -12,6 +12,7 @@ public class Player implements Iplayer {
   private final String name;
   private Ispace location;
   private final List<Iitem> inventory;
+  private final int maxInventory = 5;
 
   /**
    * Constructs a new Player with the specified name, initial location, and the
@@ -65,6 +66,10 @@ public class Player implements Iplayer {
   public void pickUpItem(String itemName) {
     if (itemName == null || itemName.trim().isEmpty()) {
       throw new IllegalArgumentException("Item name cannot be empty!");
+    }
+    // Check if the player's inventory is already full
+    if (inventory.size() >= maxInventory) {
+      throw new IllegalArgumentException("Inventory is full. Cannot pick up more items.");
     }
     List<Iitem> spaceItems = ((Space) location).getItemObjects();
     Iitem found = null;

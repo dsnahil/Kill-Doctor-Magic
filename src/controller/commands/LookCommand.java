@@ -11,17 +11,22 @@ import killdoctorlucky.model.Iworld;
 public class LookCommand implements Icommand {
   private final String playerName;
 
+  /**
+   * Command for a player to "look around" their current space. This command
+   * retrieves and displays detailed information about the space the player is
+   * currently in.
+   */
   public LookCommand(String playerName) {
     this.playerName = playerName;
   }
 
   @Override
   public void execute(Iworld model) {
-    int pIndex = model.findPlayerIndex(playerName);
-    if (pIndex < 0) {
+    int pindex = model.findPlayerIndex(playerName);
+    if (pindex < 0) {
       throw new IllegalArgumentException("Player not found: " + playerName);
     }
-    Iplayer player = model.getPlayers().get(pIndex);
+    Iplayer player = model.getPlayers().get(pindex);
     Ispace currentSpace = player.getPlayerLocation();
 
     // Example: just print the space info to console or store it for output

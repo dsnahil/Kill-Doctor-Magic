@@ -11,6 +11,12 @@ public class AttackCommand implements Icommand {
   private final String playerName;
   private final String weaponName;
 
+  /**
+   * Constructs an AttackCommand.
+   *
+   * @param playerName the name of the player issuing the attack
+   * @param weaponName the name of the weapon used in the attack
+   */
   public AttackCommand(String playerName, String weaponName) {
     this.playerName = playerName;
     this.weaponName = weaponName;
@@ -18,11 +24,11 @@ public class AttackCommand implements Icommand {
 
   @Override
   public void execute(Iworld model) {
-    int pIndex = model.findPlayerIndex(playerName);
-    if (pIndex < 0) {
+    int pindex = model.findPlayerIndex(playerName);
+    if (pindex < 0) {
       throw new IllegalArgumentException("Player not found: " + playerName);
     }
-    Iplayer player = model.getPlayers().get(pIndex);
+    Iplayer player = model.getPlayers().get(pindex);
     player.attackDoctorLucky(weaponName);
   }
 }

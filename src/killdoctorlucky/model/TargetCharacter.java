@@ -51,6 +51,13 @@ public class TargetCharacter implements ItargetCharacter {
     }
   }
 
+  /**
+   * Resets the singleton instance so a new game can start fresh.
+   */
+  public static void resetInstance() {
+    instance = null;
+  }
+
   @Override
   public int getTargetHealth() {
     return health;
