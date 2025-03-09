@@ -229,9 +229,9 @@ public class World implements Iworld {
         .append(s.getItems()).append("\n").append("Neighbors: ").append(s.getNeighbors())
         .append("\n").append("Coordinates: [").append(s.getUpperRow()).append(", ")
         .append(s.getUpperColumn()).append("] to [").append(s.getLowerRow()).append(", ")
-        .append(s.getLowerColumn()).append("]");
+        .append(s.getLowerColumn()).append("]\n");
 
-    // New code: list players present in this space.
+    // List players present in this space.
     List<String> playersInSpace = new ArrayList<>();
     for (Iplayer player : getPlayers()) {
       if (player.getPlayerLocation().getSpaceName().equalsIgnoreCase(s.getSpaceName())) {
@@ -240,6 +240,23 @@ public class World implements Iworld {
     }
     sb.append("\nPlayers Present: ").append(playersInSpace);
 
+    // Optionally, include details of each neighboring space.
+    sb.append("\n--- Visible Neighboring Spaces ---\n");
+    for (String neighborName : s.getNeighbors()) {
+      Ispace neighbor = getSpaceByName(neighborName);
+      if (neighbor != null) {
+        sb.append(neighbor.getSpaceName()).append(" (Items: ").append(neighbor.getItems())
+            .append(", Players: ");
+        // List players in the neighbor space
+        List<String> neighborPlayers = new ArrayList<>();
+        for (Iplayer p : getPlayers()) {
+          if (p.getPlayerLocation().getSpaceName().equalsIgnoreCase(neighbor.getSpaceName())) {
+            neighborPlayers.add(p.getPlayerName());
+          }
+        }
+        sb.append(neighborPlayers).append(")\n");
+      }
+    }
     return sb.toString();
   }
 

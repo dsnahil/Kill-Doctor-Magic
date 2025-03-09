@@ -1,47 +1,57 @@
 package killdoctorlucky.model;
 
 import java.util.List;
-import java.util.Random;
+import util.RandomGenerator;
 
 /**
- * Represents a computer-controlled player in the "Kill Doctor Lucky" game. The
- * computer player randomly chooses an action each turn, including moving,
- * picking up an item, attacking, or looking around.
+ * Represents a computer-controlled player in the "Kill Doctor Lucky" game.
  */
 public class ComputerPlayer extends Player {
-
-  private final Random rand;
+  private final RandomGenerator randGen;
 
   /**
    * Constructs a ComputerPlayer with a specified name, starting location, and
-   * game world.
+   * game world. This default constructor uses a truly random generator.
    *
-   * @param name          the name of the computer player.
-   * @param startLocation the starting space of the player in the world.
-   * @param world         the game world where the player exists.
+   * @param name          the name of the computer player
+   * @param startLocation the starting space for the player
+   * @param world         the game world
    */
   public ComputerPlayer(String name, Ispace startLocation, Iworld world) {
+    this(name, startLocation, world, new RandomGenerator()); // calls the other constructor
+  }
+
+  /**
+   * Constructs a ComputerPlayer with a specified random generator, allowing you
+   * to control randomness for testing or real game play.
+   *
+   * @param name          the name of the computer player
+   * @param startLocation the starting space for the player
+   * @param world         the game world
+   * @param randGen       a RandomGenerator (could be real or fixed)
+   */
+  public ComputerPlayer(String name, Ispace startLocation, Iworld world, RandomGenerator randGen) {
     super(name, startLocation, world);
-    this.rand = new Random();
+    this.randGen = randGen;
   }
 
   /**
    * Determines and executes the next action for the computer-controlled player.
-   * The AI randomly selects between moving, picking up an item, attacking Doctor
-   * Lucky, or simply looking around.
+   * The AI randomly selects between moving, picking up an item, attacking, or
+   * looking around.
    */
   public void takeTurn() {
-    int choice = rand.nextInt(4); // Randomly choose 0, 1, 2, or 3
-
+    int choice = randGen.nextInt(4); // randomly pick 0,1,2,3
     switch (choice) {
       case 0:
         // Move: choose a random neighbor if available
         List<String> neighbors = getPlayerLocation().getNeighbors();
         if (!neighbors.isEmpty()) {
-          String target = neighbors.get(rand.nextInt(neighbors.size()));
+          String target = neighbors.get(randGen.nextInt(neighbors.size()));
           moveTo(world.getSpaceByName(target));
           System.out.println(getPlayerName() + " moves to " + target);
-          return;
+        } else {
+          System.out.println(getPlayerName() + " looks around (no neighbors).");
         }
         break;
 
@@ -49,27 +59,30 @@ public class ComputerPlayer extends Player {
         // Pickup: choose a random item from current space, if any
         List<String> items = getPlayerLocation().getItems();
         if (!items.isEmpty()) {
-          String item = items.get(rand.nextInt(items.size()));
+          String item = items.get(randGen.nextInt(items.size()));
           pickUpItem(item);
           System.out.println(getPlayerName() + " picks up " + item);
-          return;
+        } else {
+          System.out.println(getPlayerName() + " looks around (no items).");
         }
         break;
 
       case 2:
-        // Attack: if inventory is not empty, choose a random weapon
+        // Attack: if inventory is not empty, pick a random weapon
         List<String> inventory = getPlayerItems();
         if (!inventory.isEmpty()) {
-          String weapon = inventory.get(rand.nextInt(inventory.size()));
+          String weapon = inventory.get(randGen.nextInt(inventory.size()));
           attackDoctorLucky(weapon);
           System.out.println(getPlayerName() + " attacks Doctor Lucky with " + weapon);
-          return;
+        } else {
+          System.out.println(getPlayerName() + " looks around (no weapon to attack).");
         }
         break;
 
       default:
-        // Look around as default action
-        System.out.println(getPlayerName() + " looks around.");
+        // Look around as the default action
+        System.out.println(getPlayerName() + " looks around:");
+        System.out.println(world.getSpaceInfo(getPlayerLocation().getSpaceName()));
         break;
     }
   }

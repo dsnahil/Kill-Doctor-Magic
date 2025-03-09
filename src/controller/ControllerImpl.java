@@ -7,12 +7,12 @@ import controller.commands.MoveCommand;
 import controller.commands.PickupCommand;
 import controller.commands.SaveMapCommand;
 import java.io.IOException;
-import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
+import killdoctorlucky.model.ComputerPlayer;
 import killdoctorlucky.model.Iplayer;
 import killdoctorlucky.model.Iworld;
 import killdoctorlucky.model.TargetCharacter;
+import util.RandomGenerator;
 
 /**
  * A text-based controller that reads commands from input and executes them
@@ -24,7 +24,6 @@ public class ControllerImpl implements Icontroller {
   private final Readable in;
   private final Appendable out;
   private final int maxTurns;
-  private final Random rand = new Random();
 
   private int turnCount = 0;
   private int currentPlayerIndex = 0;
@@ -37,7 +36,8 @@ public class ControllerImpl implements Icontroller {
    * @param out      an Appendable sink (e.g., System.out)
    * @param maxTurns the maximum number of turns allowed before the game ends
    */
-  public ControllerImpl(Iworld model, Readable in, Appendable out, int maxTurns) {
+  public ControllerImpl(Iworld model, Readable in, Appendable out, int maxTurns,
+      RandomGenerator randGen) {
     if (model == null || in == null || out == null) {
       throw new IllegalArgumentException("Model/input/output cannot be null.");
     }
@@ -45,6 +45,13 @@ public class ControllerImpl implements Icontroller {
     this.in = in;
     this.out = out;
     this.maxTurns = maxTurns;
+  }
+
+  /**
+   * Overload constructor if you want a default random-based version.
+   */
+  public ControllerImpl(Iworld model, Readable in, Appendable out, int maxTurns) {
+    this(model, in, out, maxTurns, new RandomGenerator()); // uses real randomness by default
   }
 
   @Override
@@ -65,7 +72,7 @@ public class ControllerImpl implements Icontroller {
         if (!sc.hasNext()) {
           break;
         }
-        String userCmd = sc.next().toLowerCase();
+        String userCmd = sc.nextLine().trim().toLowerCase();
 
         if (userCmd.equals("quit")) {
           appendMessage("Exiting the game. Thanks for playing!");
@@ -75,13 +82,7 @@ public class ControllerImpl implements Icontroller {
         // parse arguments if needed
         handleCommand(userCmd, sc, currentPlayer.getPlayerName());
       } else {
-        // This is a computer player => decide automatically
-        Icommand aiCommand = decideComputerAction(currentPlayer);
-        try {
-          aiCommand.execute(model);
-        } catch (IllegalArgumentException e) {
-          appendMessage("AI command failed: " + e.getMessage());
-        }
+        ((ComputerPlayer) currentPlayer).takeTurn();
       }
 
       // Move Doctor Lucky automatically after each turn
@@ -101,13 +102,11 @@ public class ControllerImpl implements Icontroller {
   }
 
   /**
-   * Example method to determine if the current player is human or computer. You
-   * can refine based on your design (like checking an interface).
+   * Example method to determine if the current player is human or computer.
    */
   private boolean isHumanPlayer(Iplayer player) {
-    // Suppose you have a class "ComputerPlayer" that extends or implements Iplayer
-    // Return false if (player instanceof ComputerPlayer).
-    return true; // for now, assume all are human unless you implement a check
+    // If player is an instance of ComputerPlayer, it’s controlled by the AI.
+    return !(player instanceof killdoctorlucky.model.ComputerPlayer);
   }
 
   /**
@@ -118,12 +117,16 @@ public class ControllerImpl implements Icontroller {
     switch (userCmd) {
       case "move":
         appendMessage("Enter space name: ");
-        if (!sc.hasNext()) {
-          return;
-        }
+        // Use nextLine() to read the full line and trim any leftover newline.
         String spaceName = sc.nextLine().trim();
+        // If spaceName is still empty (because next() left an empty remainder), try
+        // reading again:
+        if (spaceName.isEmpty() && sc.hasNextLine()) {
+          spaceName = sc.nextLine().trim();
+        }
         command = new MoveCommand(playerName, spaceName);
         break;
+
       case "pickup":
         appendMessage("Enter item name: ");
         if (!sc.hasNext()) {
@@ -163,43 +166,6 @@ public class ControllerImpl implements Icontroller {
       command.execute(model);
     } catch (IllegalArgumentException e) {
       appendMessage("Command failed: " + e.getMessage());
-    }
-  }
-
-  /**
-   * Decides the next action for a computer-controlled player. This is just an
-   * example; you can make it random or more strategic.
-   */
-  private Icommand decideComputerAction(Iplayer computerPlayer) {
-    int choice = rand.nextInt(4); // Randomly choose 0, 1, 2, or 3
-    switch (choice) {
-      case 0:
-        // Move: choose a random neighbor if available
-        List<String> neighbors = computerPlayer.getPlayerLocation().getNeighbors();
-        if (!neighbors.isEmpty()) {
-          String target = neighbors.get(rand.nextInt(neighbors.size()));
-          return new MoveCommand(computerPlayer.getPlayerName(), target);
-        }
-        return new LookCommand(computerPlayer.getPlayerName());
-      case 1:
-        // Pickup: choose a random item from current space, if any
-        List<String> items = computerPlayer.getPlayerLocation().getItems();
-        if (!items.isEmpty()) {
-          String item = items.get(rand.nextInt(items.size()));
-          return new PickupCommand(computerPlayer.getPlayerName(), item);
-        }
-        return new LookCommand(computerPlayer.getPlayerName());
-      case 2:
-        // Attack: if inventory is not empty, choose a random weapon
-        List<String> inventory = computerPlayer.getPlayerItems();
-        if (!inventory.isEmpty()) {
-          String weapon = inventory.get(rand.nextInt(inventory.size()));
-          return new AttackCommand(computerPlayer.getPlayerName(), weapon);
-        }
-        return new LookCommand(computerPlayer.getPlayerName());
-      default:
-        // Look around as default action
-        return new LookCommand(computerPlayer.getPlayerName());
     }
   }
 
