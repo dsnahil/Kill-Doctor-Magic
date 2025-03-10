@@ -1,0 +1,32 @@
+Welcome to Kill Doctor Lucky!
+World Loaded!
+Mansion has been built successfully!
+
+=== Help Menu ===
+move   - Moves your player to an adjacent room. You will be shown valid neighbor rooms.
+pickup - Picks up an item from the current room. The room's available items are listed.
+attack - Attacks Doctor Lucky using a weapon from your inventory. Make sure you have picked up a valid weapon.
+help   - Displays this help menu with instructions for each command.
+quit   - Exits the game.
+Note: Commands and item/space names are case-insensitive. Make sure you are in the correct room to pick up a specific item.
+=================
+
+You are in: Kitchen
+Your Items: []
+Doctor Lucky's HP: 50
+Available commands: move, pickup, attack, help, quit
+Enter command: move
+Valid neighbors: [Dining Hall]
+Enter space name to move to (type exactly one of the valid neighbors): Parlor
+Error: No such space exists.
+
+You are in: Kitchen
+Your Items: []
+Doctor Lucky's HP: 50
+Available commands: move, pickup, attack, help, quit
+Enter command: attack
+Your current inventory: []
+Enter weapon name to attack Doctor Lucky (choose one from your inventory): Revolver
+Error: Weapon not found in inventory.
+
+Game Over! No one won, as Doctor Lucky is still alive.

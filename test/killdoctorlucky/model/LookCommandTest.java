@@ -70,8 +70,8 @@ public class LookCommandTest {
 
     @Override
     public String getSpaceInfo(String spaceName) {
-      // Return some dummy space info.
-      return "Space: MockSpace\nItems: [FakeItem]\nNeighbors: [FakeNeighbor]\nCoordinates: [0, 0] to [0, 0]";
+      return "Space: MockSpace\nItems: [FakeItem]\nNeighbors: "
+          + "[FakeNeighbor]\nCoordinates: [0, 0] to [0, 0]";
     }
 
     @Override
