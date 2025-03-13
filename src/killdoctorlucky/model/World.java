@@ -240,7 +240,6 @@ public class World implements Iworld {
     }
     sb.append("\nPlayers Present: ").append(playersInSpace);
 
-    // Optionally, include details of each neighboring space.
     sb.append("\n--- Visible Neighboring Spaces ---\n");
     for (String neighborName : s.getNeighbors()) {
       Ispace neighbor = getSpaceByName(neighborName);
@@ -264,11 +263,11 @@ public class World implements Iworld {
   public Ispace getSpaceByName(String name) {
     for (Ispace space : spaces) {
       if (space.getSpaceName().equalsIgnoreCase(name)) {
-        return space;
+        return new Space((Space) space);
       }
     }
     System.out.println("Warning: Space '" + name + "' not found.");
-    return spaces.isEmpty() ? null : spaces.get(0);
+    return spaces.isEmpty() ? null : new Space((Space) spaces.get(0));
   }
 
   @Override

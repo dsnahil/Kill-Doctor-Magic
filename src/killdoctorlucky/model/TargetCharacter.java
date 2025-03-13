@@ -1,11 +1,15 @@
 package killdoctorlucky.model;
 
+import java.util.logging.Logger;
+
 /**
  * Represents the target character, Doctor Lucky, in the "Kill Doctor Lucky"
  * game. This class is implemented as a singleton to ensure that only one
  * instance of Doctor Lucky exists throughout the game.
  */
 public class TargetCharacter implements ItargetCharacter {
+  private static final Logger logger = Logger.getLogger(TargetCharacter.class.getName());
+
   private static TargetCharacter instance;
   private final String name;
   private int health;
@@ -75,7 +79,7 @@ public class TargetCharacter implements ItargetCharacter {
       if (health < 0) {
         health = 0;
       }
-      System.out.println(name + " now has " + health + " HP left.");
+      logger.info(name + " now has " + health + " HP left.");
     }
   }
 }

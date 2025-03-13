@@ -1,6 +1,7 @@
 package controller.commands;
 
 import controller.Icommand;
+import java.util.logging.Logger;
 import killdoctorlucky.model.Iplayer;
 import killdoctorlucky.model.Iworld;
 
@@ -10,6 +11,7 @@ import killdoctorlucky.model.Iworld;
 public class AttackCommand implements Icommand {
   private final String playerName;
   private final String weaponName;
+  private static final Logger logger = Logger.getLogger(AttackCommand.class.getName());
 
   /**
    * Constructs an AttackCommand.
@@ -30,5 +32,7 @@ public class AttackCommand implements Icommand {
     }
     Iplayer player = model.getPlayers().get(pindex);
     player.attackDoctorLucky(weaponName);
+    // Optionally log that the command was executed.
+    logger.info(playerName + " executed attack with " + weaponName);
   }
 }

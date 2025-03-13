@@ -26,7 +26,6 @@ public class Space implements Ispace {
    * @param lowerCol the lower column boundary of the space.
    * @param name     the name of the space, used for identification.
    */
-
   public Space(int upperRow, int upperCol, int lowerRow, int lowerCol, String name) {
     this.upperRow = upperRow;
     this.upperCol = upperCol;
@@ -37,7 +36,24 @@ public class Space implements Ispace {
     this.neighbors = new ArrayList<>();
   }
 
-  public List<Iitem> getItemObjects() {
+  /**
+   * Copy constructor to create a defensive copy.
+   */
+  public Space(Space other) {
+    this.upperRow = other.upperRow;
+    this.upperCol = other.upperCol;
+    this.lowerRow = other.lowerRow;
+    this.lowerCol = other.lowerCol;
+    this.name = other.name;
+    this.items = new ArrayList<>(other.items);
+    this.neighbors = new ArrayList<>(other.neighbors);
+  }
+
+  /**
+   * Returns the internal list of item objects. (Package‑private to avoid external
+   * modification.)
+   */
+  List<Iitem> getItemObjects() {
     return items;
   }
 
@@ -67,19 +83,16 @@ public class Space implements Ispace {
   }
 
   /**
-   * Adds an item to the space's inventory.
-   *
-   * @param itemName the name of the item to be added to the space. This item will
-   *                 be added to the list of items in this space.
+   * Adds an item to the space by its name. (Package‑private to restrict external
+   * use.)
    */
-  public void addItem(String itemName) {
+  void addItem(String itemName) {
     addItem(new Item(-1, 0, itemName));
   }
 
   @Override
   public void addItem(Iitem item) {
     items.add(item);
-
   }
 
   @Override
@@ -97,14 +110,10 @@ public class Space implements Ispace {
   }
 
   /**
-   * Adds a neighboring space to this space's list of neighbors. This method
-   * establishes a relationship between the current space and its adjacent space.
-   *
-   * @param neighborName the name of the neighboring space to be added. This space
-   *                     will be considered a neighbor of the current space.
+   * Adds a neighboring space to this space’s list. (Package‑private for internal
+   * use only.)
    */
-  public void addNeighbor(String neighborName) {
+  void addNeighbor(String neighborName) {
     neighbors.add(neighborName);
   }
-
 }
