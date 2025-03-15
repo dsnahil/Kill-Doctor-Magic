@@ -175,3 +175,18 @@ During the development of this project, the following resources were referenced:
 
 
   - JUnit 4 API: [https://junit.org/junit4/javadoc/latest/](https://junit.org/junit4/javadoc/latest/)  
+
+
+## Design Changes
+
+
+• Adding support for computer-controlled players via the new ComputerPlayer class (src/killdoctorlucky/model/ComputerPlayer.java, lines 1–89).
+
+
+• Implementing a turn-based system in the controller (ControllerImpl.java, lines 62–94).
+
+
+• Enhancing movement validation by establishing neighbor relationships (World.java, lines 283–293) and updating the moveTo() method (Player.java, lines 52–58).
+
+
+• Introducing graphical map generation using AWT (World.java, lines 157–172).
