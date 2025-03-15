@@ -131,3 +131,47 @@ JUnit 4 tests are located in the `test/killdoctorlucky/model/` directory. The te
     - `graphics.jar` – The JAR file used for generating the world map.
 - **test/**  
   - Contains JUnit test classes under `killdoctorlucky/model/`.
+
+## Assumptions
+
+• The mansion file (res/mansion.txt) would follow a consistent, well‐formed format.
+
+
+• Players are uniquely identified by their names, as seen in the Player class (src/killdoctorlucky/model/Player.java, lines 27–44).
+
+
+• Movement is allowed only to adjacent spaces; this is validated in the moveTo() method (Player.java, lines 52–58) and by the neighbor establishment in the World class (lines 283–293).
+
+
+• Doctor Lucky’s health is modified only via valid attacks (see TargetCharacter.java, lines 24–28).
+
+
+• The turn‐based mechanism (implemented in ControllerImpl.java, lines 62–94) would alternate correctly among players.
+
+
+## Limitations
+
+• The neighbor logic for movement uses a simple tolerance check (World.java, lines 283–293) that might not support very complex mansion layouts.
+
+
+• The map generation (in World.java, lines 157–172) creates a basic graphical representation using standard AWT drawing without advanced styling or scaling.
+
+
+• Computer-controlled player actions are determined purely by a random choice (ComputerPlayer.java, lines 43–87) with no strategic depth.
+
+
+## 📜 Citations & References  
+
+During the development of this project, the following resources were referenced:  
+
+- **Java API Documentation**  
+  - Oracle Java SE API Docs: [https://docs.oracle.com/en/java/javase/](https://docs.oracle.com/en/java/javase/)  
+
+
+  - `java.awt` Package: [https://docs.oracle.com/javase/8/docs/api/java/awt/package-summary.html](https://docs.oracle.com/javase/8/docs/api/java/awt/package-summary.html)  
+
+- **JUnit Testing Framework**  
+  - JUnit 5 Documentation: [https://junit.org/junit5/docs/current/user-guide/](https://junit.org/junit5/docs/current/user-guide/)  
+
+
+  - JUnit 4 API: [https://junit.org/junit4/javadoc/latest/](https://junit.org/junit4/javadoc/latest/)  
