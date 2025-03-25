@@ -1,3 +1,4 @@
+
 package killdoctorlucky.model;
 
 import static org.junit.Assert.assertEquals;

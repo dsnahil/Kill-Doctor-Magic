@@ -44,7 +44,7 @@ public class Driver {
 
     // Add players.
     // (For cleaner output, remove debug prints from world.addPlayer if desired.)
-    world.addPlayer("Alice", 0);
+    world.addPlayer("Tony", 0);
     world.addPlayer("Snahil", 1); // human-controlled player
     // Add a computer-controlled player.
     ComputerPlayer cpu = new ComputerPlayer("CPU", world.getSpaceByName("Kitchen"), world,
