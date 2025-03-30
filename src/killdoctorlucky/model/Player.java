@@ -11,7 +11,7 @@ public class Player implements Iplayer {
   public Iworld world;
   private final String name;
   private Ispace location;
-  private final List<Iitem> inventory;
+  protected List<Iitem> inventory;
   private final int maxInventory = 5;
 
   /**
@@ -21,14 +21,13 @@ public class Player implements Iplayer {
    * @param name          The name of the player, used for identification.
    * @param startLocation The starting location of the player within the game
    *                      world.
-   * @param world         The game world in which the player exists. This is used
-   *                      to interact with the game environment.
+   * @param world         The game world in which the player exists.
+   * @throws IllegalArgumentException if startLocation or world is null
    */
   public Player(String name, Ispace startLocation, Iworld world) {
     if (startLocation == null) {
       throw new IllegalArgumentException("Starting location cannot be null.");
     }
-
     if (world == null) {
       throw new IllegalArgumentException("World cannot be null for Player.");
     }
@@ -50,7 +49,7 @@ public class Player implements Iplayer {
 
   @Override
   public void moveTo(Ispace newSpace) {
-    // Allow move only if newSpace is a neighbor of the current location
+    // Only allow a move if the target space is adjacent (in the neighbor list).
     if (!location.getNeighbors().contains(newSpace.getSpaceName())) {
       throw new IllegalArgumentException("Cannot move to a non-adjacent space!");
     }
@@ -71,6 +70,7 @@ public class Player implements Iplayer {
     if (inventory.size() >= maxInventory) {
       throw new IllegalArgumentException("Inventory is full. Cannot pick up more items.");
     }
+    // Find the item in the current space
     List<Iitem> spaceItems = ((Space) location).getItemObjects();
     Iitem found = null;
     for (Iitem item : spaceItems) {
@@ -89,21 +89,36 @@ public class Player implements Iplayer {
 
   @Override
   public void attackDoctorLucky(String weapon) {
-    // Check if the player is in the same room as Doctor Lucky
+    // Must be in the same space as the target.
     if (!location.getSpaceName().equalsIgnoreCase(world.getTargetLocation().getSpaceName())) {
-      System.out.println("You must be in the same room as Doctor Lucky to attack!");
+      System.out.println("You must be in the same room as the target to attack!");
       return;
     }
-
-    // Look for the weapon in the player's inventory
+    // Check if any other player sees the attack.
+    for (Iplayer other : world.getPlayers()) {
+      if (!other.getPlayerName().equalsIgnoreCase(this.name) && world.canPlayerSee(other, this)) {
+        System.out.println("Attack was seen by " + other.getPlayerName() + ". No damage dealt!");
+        return;
+      }
+    }
+    // If no weapon is available, perform a default 1-damage attack.
+    if (inventory.isEmpty() || weapon.equalsIgnoreCase("default")) {
+      System.out.println(name + " pokes the target in the eye (1 damage)!");
+      world.setLastAttacker(this.name);
+      TargetCharacter.getInstance().decreaseHealth(1);
+      if (TargetCharacter.getInstance().getTargetHealth() <= 0) {
+        world.setWinner(this.name);
+      }
+      return;
+    }
+    // Otherwise, look for the specified weapon in the player's inventory
     for (Iitem item : inventory) {
       if (item.getItemName().equalsIgnoreCase(weapon)) {
-        // Record this player as the last attacker
         world.setLastAttacker(this.name);
-        // Attack and decrease Doctor Lucky's health
         TargetCharacter.getInstance().decreaseHealth(item.getDamage());
-        System.out.println(name + " attacked Doctor Lucky with " + weapon + "!");
-        // Remove the weapon from the inventory after the attack
+        System.out
+            .println(name + " attacked with " + weapon + " for " + item.getDamage() + " damage!");
+        // Remove the weapon from inventory after use
         removeItem(item.getItemName());
         if (TargetCharacter.getInstance().getTargetHealth() <= 0) {
           world.setWinner(this.name);
@@ -122,5 +137,4 @@ public class Player implements Iplayer {
     }
     return itemNames;
   }
-
 }

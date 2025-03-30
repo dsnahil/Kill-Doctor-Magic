@@ -3,8 +3,7 @@ package killdoctorlucky.model;
 import java.util.List;
 
 /**
- * Represents a player in the "Kill Doctor Lucky" game. This interface defines
- * the necessary actions a player can perform.
+ * Represents a player in the "Kill Doctor Lucky" game.
  */
 public interface Iplayer {
 
@@ -26,25 +25,30 @@ public interface Iplayer {
    * Moves the player to a new specified space.
    *
    * @param newSpace The new space to which the player should move.
+   * @throws IllegalArgumentException if the space is not adjacent
    */
   void moveTo(Ispace newSpace);
 
   /**
-   * Removes an item from the player's inventory.
+   * Removes an item from the player's inventory by name.
    *
    * @param item The name of the item to remove.
    */
   void removeItem(String item);
 
   /**
-   * Adds an item to the player's inventory.
+   * Adds (picks up) an item to the player's inventory by name.
    *
    * @param item The name of the item to pick up.
+   * @throws IllegalArgumentException if the item is not found in the current
+   *                                  space
    */
   void pickUpItem(String item);
 
   /**
-   * Attacks Doctor Lucky using a specified weapon from the player's inventory.
+   * Attacks the target character using a specified weapon from the player's
+   * inventory. If the attack is seen by another player, it fails. If the player
+   * has no items, a default "poke in the eye" attack for 1 damage is used.
    *
    * @param weapon The name of the weapon used in the attack.
    */

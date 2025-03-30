@@ -11,14 +11,14 @@ public class ComputerPlayer extends Player {
 
   /**
    * Constructs a ComputerPlayer with a specified name, starting location, and
-   * game world. This default constructor uses a truly random generator.
+   * game world, using a real RandomGenerator by default.
    *
    * @param name          the name of the computer player
    * @param startLocation the starting space for the player
    * @param world         the game world
    */
   public ComputerPlayer(String name, Ispace startLocation, Iworld world) {
-    this(name, startLocation, world, new RandomGenerator()); // calls the other constructor
+    this(name, startLocation, world, new RandomGenerator());
   }
 
   /**
@@ -54,7 +54,6 @@ public class ComputerPlayer extends Player {
           System.out.println(getPlayerName() + " looks around (no neighbors).");
         }
         break;
-
       case 1:
         // Pickup: choose a random item from current space, if any
         List<String> items = getPlayerLocation().getItems();
@@ -66,19 +65,18 @@ public class ComputerPlayer extends Player {
           System.out.println(getPlayerName() + " looks around (no items).");
         }
         break;
-
       case 2:
         // Attack: if inventory is not empty, pick a random weapon
         List<String> inventory = getPlayerItems();
         if (!inventory.isEmpty()) {
           String weapon = inventory.get(randGen.nextInt(inventory.size()));
           attackDoctorLucky(weapon);
-          System.out.println(getPlayerName() + " attacks Doctor Lucky with " + weapon);
+          System.out.println(getPlayerName() + " attacks with " + weapon);
         } else {
-          System.out.println(getPlayerName() + " looks around (no weapon to attack).");
+          System.out.println(getPlayerName() + " has no weapon, using default attack.");
+          attackDoctorLucky("default");
         }
         break;
-
       default:
         // Look around as the default action
         System.out.println(getPlayerName() + " looks around:");

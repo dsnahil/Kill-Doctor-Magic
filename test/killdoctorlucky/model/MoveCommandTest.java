@@ -21,11 +21,10 @@ public class MoveCommandTest {
   private Iworld mockWorld;
 
   /**
-   * Sets up the minimal mock world for testing MoveCommand.
+   * Sets up the test fixture by initializing a new MockWorld instance.
    */
   @Before
   public void setUp() {
-    // Create a minimal mock world
     mockWorld = new MockWorld();
   }
 
@@ -34,7 +33,6 @@ public class MoveCommandTest {
     // Player is at "MockSpace" which has a neighbor "NeighborSpace"
     moveCommand = new MoveCommand("MockPlayer", "NeighborSpace");
     moveCommand.execute(mockWorld);
-    // If no exception is thrown, the move was valid.
     // Verify that the player's location is now "NeighborSpace".
     MockWorld w = (MockWorld) mockWorld;
     assertEquals("NeighborSpace", ((MockPlayer) w.mockPlayer).location.getSpaceName());
@@ -52,11 +50,6 @@ public class MoveCommandTest {
     }
   }
 
-  /**
-   * Minimal mock world that has exactly one player ("MockPlayer") in "MockSpace,"
-   * which has exactly one neighbor: "NeighborSpace". Also implements
-   * getSpaceByName.
-   */
   private class MockWorld implements Iworld {
     private Iplayer mockPlayer;
 
@@ -79,15 +72,12 @@ public class MoveCommandTest {
 
     @Override
     public Ispace getSpaceByName(String name) {
-      // For valid neighbor, return a new MockSpace with that name.
       if ("NeighborSpace".equalsIgnoreCase(name) || "NonNeighbor".equalsIgnoreCase(name)) {
         return new MockSpace(name);
       }
       throw new UnsupportedOperationException("getSpaceByName not implemented for name: " + name);
     }
 
-    // The rest of these methods can be stubbed or throw
-    // UnsupportedOperationException if not used.
     @Override
     public void addPlayer(String name, int spaceIndex) {
       throw new UnsupportedOperationException();
@@ -147,6 +137,22 @@ public class MoveCommandTest {
     public java.awt.image.BufferedImage generateWorldMap() {
       throw new UnsupportedOperationException();
     }
+
+    // New stubs:
+    @Override
+    public Ipet getPet() {
+      return null;
+    }
+
+    @Override
+    public String viewTargetCharacter() {
+      return null;
+    }
+
+    @Override
+    public boolean canPlayerSee(Iplayer a, Iplayer b) {
+      return false;
+    }
   }
 
   private class MockPlayer implements Iplayer {
@@ -155,8 +161,6 @@ public class MoveCommandTest {
 
     public MockPlayer(String name) {
       this.name = name;
-      // The player's starting space is "MockSpace" with a single neighbor
-      // "NeighborSpace"
       this.location = new MockSpace("MockSpace");
       this.location.addNeighbor("NeighborSpace");
     }
@@ -173,7 +177,6 @@ public class MoveCommandTest {
 
     @Override
     public void moveTo(Ispace newSpace) {
-      // Check if newSpace is a neighbor; if not, throw exception.
       if (!location.getNeighbors().contains(newSpace.getSpaceName())) {
         throw new IllegalArgumentException("Cannot move to a non-adjacent space!");
       }
@@ -224,7 +227,6 @@ public class MoveCommandTest {
       return neighbors;
     }
 
-    // The remaining methods are stubs:
     @Override
     public int getUpperRow() {
       return 0;
@@ -252,6 +254,17 @@ public class MoveCommandTest {
     @Override
     public List<String> getItems() {
       return new ArrayList<>();
+    }
+
+    // New methods:
+    @Override
+    public void setHasPet(boolean flag) {
+      // no-op for testing
+    }
+
+    @Override
+    public boolean getHasPet() {
+      return false;
     }
   }
 }

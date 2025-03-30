@@ -45,23 +45,23 @@ public class SaveMapCommandTest {
   @Test
   public void testExecuteSaveMapFailure() {
     // Provide an invalid filename or make the mock throw an exception
-    // For demonstration, we'll pretend "InvalidDir/testmap.png" fails
     Icommand badCommand = new SaveMapCommand("InvalidDir/testmap.png");
     // Our mock won't actually fail, but you could modify it to do so
     badCommand.execute(mockWorld);
-
-    // Optionally check console output "Failed to save map:" if needed
     assertTrue(true);
   }
 
+  /**
+   * Minimal mock implementation of Iworld.
+   */
   private class MockWorld implements Iworld {
+
     @Override
-    public java.awt.image.BufferedImage generateWorldMap() {
+    public BufferedImage generateWorldMap() {
       // Return a 10x10 blank image
       return new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
     }
 
-    // Stubs for everything else:
     @Override
     public void addPlayer(String name, int spaceIndex) {
     }
@@ -126,6 +126,22 @@ public class SaveMapCommandTest {
 
     @Override
     public void moveTargetCharacter() {
+    }
+
+    // New methods to satisfy updated Iworld interface:
+    @Override
+    public Ipet getPet() {
+      return null; // Return null for testing purposes.
+    }
+
+    @Override
+    public String viewTargetCharacter() {
+      return null; // Return null or a dummy string if needed.
+    }
+
+    @Override
+    public boolean canPlayerSee(Iplayer a, Iplayer b) {
+      return false; // Return false by default.
     }
   }
 }

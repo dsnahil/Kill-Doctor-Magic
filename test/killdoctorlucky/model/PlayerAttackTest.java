@@ -96,6 +96,22 @@ public class PlayerAttackTest {
     public void moveTargetCharacter() {
       throw new UnsupportedOperationException();
     }
+
+    // New stubs:
+    @Override
+    public Ipet getPet() {
+      return null;
+    }
+
+    @Override
+    public String viewTargetCharacter() {
+      return null;
+    }
+
+    @Override
+    public boolean canPlayerSee(Iplayer a, Iplayer b) {
+      return false;
+    }
   }
 
   /**
@@ -106,9 +122,10 @@ public class PlayerAttackTest {
     // For these tests, use a space named "Parlor" as the player's starting
     // location.
     Space parlor = new Space(0, 0, 1, 1, "Parlor");
-    // In some tests we want Doctor Lucky to be in the same room, so we use parlor.
+    // The DummyWorld places Doctor Lucky in the same space if needed.
     DummyWorld dummyWorldSameRoom = new DummyWorld(parlor);
     player = new Player("Alice", parlor, dummyWorldSameRoom);
+
     // Reset Doctor Lucky's health
     TargetCharacter.setInstance("Doctor Lucky", 50);
     doctorLucky = TargetCharacter.getInstance();
@@ -118,6 +135,7 @@ public class PlayerAttackTest {
   public void testAttackDoctorLuckyWithoutWeapon() {
     int initialHealth = doctorLucky.getTargetHealth();
     player.attackDoctorLucky("Loud Noise");
+    // No damage should be done because "Loud Noise" isn't in inventory
     assertEquals(initialHealth, doctorLucky.getTargetHealth());
   }
 

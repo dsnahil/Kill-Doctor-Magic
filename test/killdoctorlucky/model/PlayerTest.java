@@ -17,7 +17,9 @@ public class PlayerTest {
   private Space adjacentSpace;
   private Space nonAdjacentSpace;
 
-  // A dummy world that returns the player's space as the target location.
+  /**
+   * A dummy world that returns the player's space as the target location.
+   */
   private class DummyWorld implements Iworld {
     private Ispace target;
 
@@ -97,6 +99,22 @@ public class PlayerTest {
     public void moveTargetCharacter() {
       throw new UnsupportedOperationException();
     }
+
+    // New stubs:
+    @Override
+    public Ipet getPet() {
+      return null;
+    }
+
+    @Override
+    public String viewTargetCharacter() {
+      return null;
+    }
+
+    @Override
+    public boolean canPlayerSee(Iplayer a, Iplayer b) {
+      return false;
+    }
   }
 
   /**
@@ -126,9 +144,7 @@ public class PlayerTest {
   @Test
   public void testMoveToValidSpace() {
     player.moveTo(adjacentSpace);
-    // Even though we moved the player's location object,
-    // the test assumes that the space name reflects the neighbor ("Dining Hall").
-    // For testing purposes, we can simulate that by setting the expected name.
+    // The space name should now reflect the neighbor ("Dining Hall").
     assertEquals("Dining Hall", player.getPlayerLocation().getSpaceName());
   }
 
@@ -156,6 +172,7 @@ public class PlayerTest {
     int initialHealth = doctorLucky.getTargetHealth();
 
     player.attackDoctorLucky("Loud Noise");
+    // "Loud Noise" isn't actually in the inventory, so no damage should occur
     assertEquals(initialHealth, doctorLucky.getTargetHealth());
   }
 }

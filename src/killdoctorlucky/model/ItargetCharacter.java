@@ -8,24 +8,23 @@ package killdoctorlucky.model;
 public interface ItargetCharacter {
 
   /**
-   * Retrieves the current health of Doctor Lucky.
+   * Retrieves the current health of the target.
    *
    * @return The current health as an integer value.
    */
   int getTargetHealth();
 
   /**
-   * Gets the name of Doctor Lucky.
+   * Gets the name of the target.
    *
-   * @return The name of Doctor Lucky as a String.
+   * @return The name of the target as a String.
    */
   String getTargetName();
 
   /**
-   * Decreases the health of Doctor Lucky by a specified amount. This method is
-   * typically called when Doctor Lucky is attacked.
+   * Decreases the health of the target by a specified amount.
    *
-   * @param damage The amount of health to decrease, represented as an integer.
+   * @param damage The amount of health to decrease.
    */
   void decreaseHealth(int damage);
 }

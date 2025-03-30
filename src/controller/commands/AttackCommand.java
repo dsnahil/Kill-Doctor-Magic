@@ -6,7 +6,7 @@ import killdoctorlucky.model.Iplayer;
 import killdoctorlucky.model.Iworld;
 
 /**
- * Command for a player to attack Doctor Lucky with a chosen weapon.
+ * Command for a player to attack the target using a chosen weapon.
  */
 public class AttackCommand implements Icommand {
   private final String playerName;
@@ -32,7 +32,6 @@ public class AttackCommand implements Icommand {
     }
     Iplayer player = model.getPlayers().get(pindex);
     player.attackDoctorLucky(weaponName);
-    // Optionally log that the command was executed.
     logger.info(playerName + " executed attack with " + weaponName);
   }
 }

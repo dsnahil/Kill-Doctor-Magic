@@ -3,9 +3,8 @@ package killdoctorlucky.model;
 import java.util.logging.Logger;
 
 /**
- * Represents the target character, Doctor Lucky, in the "Kill Doctor Lucky"
- * game. This class is implemented as a singleton to ensure that only one
- * instance of Doctor Lucky exists throughout the game.
+ * Represents the target character, often "Doctor Lucky", in the "Kill Doctor
+ * Lucky" game. Implemented as a singleton so only one instance exists.
  */
 public class TargetCharacter implements ItargetCharacter {
   private static final Logger logger = Logger.getLogger(TargetCharacter.class.getName());
@@ -15,11 +14,10 @@ public class TargetCharacter implements ItargetCharacter {
   private int health;
 
   /**
-   * Private constructor to enforce singleton usage. Initializes a new
-   * TargetCharacter with a name and health.
+   * Private constructor to enforce singleton usage.
    *
-   * @param name   the name of the character, typically "Doctor Lucky".
-   * @param health the initial health of Doctor Lucky.
+   * @param name   the name of the target character
+   * @param health the initial health of the target
    */
   TargetCharacter(String name, int health) {
     this.name = name;
@@ -28,9 +26,9 @@ public class TargetCharacter implements ItargetCharacter {
 
   /**
    * Provides access to the singleton instance of the TargetCharacter. If the
-   * instance does not exist, it initializes it with default values.
+   * instance does not exist, it initializes with default values.
    *
-   * @return the single instance of TargetCharacter.
+   * @return the single instance of TargetCharacter
    */
   public static TargetCharacter getInstance() {
     if (instance == null) {
@@ -40,12 +38,10 @@ public class TargetCharacter implements ItargetCharacter {
   }
 
   /**
-   * Initializes or updates the singleton instance of the TargetCharacter. This
-   * method can also reset the instance with new values if needed.
+   * Initializes or updates the singleton instance of the TargetCharacter.
    *
-   * @param name   the new name of Doctor Lucky, if resetting the instance.
-   * @param health the new health value of Doctor Lucky, if resetting the
-   *               instance.
+   * @param name   the name of the target
+   * @param health the new health value of the target
    */
   public static void setInstance(String name, int health) {
     if (instance == null) {
@@ -56,7 +52,7 @@ public class TargetCharacter implements ItargetCharacter {
   }
 
   /**
-   * Resets the singleton instance so a new game can start fresh.
+   * Resets the singleton instance, allowing a new game to start fresh.
    */
   public static void resetInstance() {
     instance = null;

@@ -19,17 +19,13 @@ public class LookCommandTest {
   private Iworld mockWorld;
 
   /**
-   * Sets up the minimal mock world for testing LookCommand.
+   * Sets up the test fixture by initializing a new MockWorld instance.
    */
   @Before
   public void setUp() {
     mockWorld = new MockWorld();
   }
 
-  /**
-   * Tests that executing LookCommand for a valid player does not throw an
-   * exception.
-   */
   @Test
   public void testExecuteLook() {
     lookCommand = new LookCommand("MockPlayer");
@@ -38,20 +34,15 @@ public class LookCommandTest {
     } catch (Exception e) {
       fail("LookCommand.execute() threw an exception: " + e.getMessage());
     }
-    // If no exception is thrown, the test passes.
     assertTrue(true);
   }
 
-  /**
-   * Tests that executing LookCommand for an unknown player throws an exception.
-   */
   @Test(expected = IllegalArgumentException.class)
   public void testExecuteLookPlayerNotFound() {
     Icommand badCommand = new LookCommand("Unknown");
     badCommand.execute(mockWorld);
   }
 
-  // Minimal mock implementation of Iworld.
   private class MockWorld implements Iworld {
     private Iplayer mockPlayer = new MockPlayer("MockPlayer");
 
@@ -70,8 +61,7 @@ public class LookCommandTest {
 
     @Override
     public String getSpaceInfo(String spaceName) {
-      return "Space: MockSpace\nItems: [FakeItem]\nNeighbors: "
-          + "[FakeNeighbor]\nCoordinates: [0, 0] to [0, 0]";
+      return "Space: " + spaceName;
     }
 
     @Override
@@ -79,7 +69,6 @@ public class LookCommandTest {
       return null;
     }
 
-    // The following methods are not used in this test so we provide stubs.
     @Override
     public void addPlayer(String name, int spaceIndex) {
     }
@@ -130,16 +119,30 @@ public class LookCommandTest {
     public java.awt.image.BufferedImage generateWorldMap() {
       return null;
     }
+
+    // New stubs:
+    @Override
+    public Ipet getPet() {
+      return null;
+    }
+
+    @Override
+    public String viewTargetCharacter() {
+      return null;
+    }
+
+    @Override
+    public boolean canPlayerSee(Iplayer a, Iplayer b) {
+      return false;
+    }
   }
 
-  // Minimal mock implementation of Iplayer.
   private class MockPlayer implements Iplayer {
     private String name;
     private Ispace location;
 
     public MockPlayer(String name) {
       this.name = name;
-      // Return a valid location (a new MockSpace with name "MockSpace").
       this.location = new MockSpace("MockSpace");
     }
 
@@ -175,7 +178,6 @@ public class LookCommandTest {
     }
   }
 
-  // Minimal mock implementation of Ispace.
   private class MockSpace implements Ispace {
     private String spaceName;
 
@@ -220,6 +222,17 @@ public class LookCommandTest {
     @Override
     public List<String> getItems() {
       return Collections.emptyList();
+    }
+
+    // New methods:
+    @Override
+    public void setHasPet(boolean flag) {
+      // no-op for testing
+    }
+
+    @Override
+    public boolean getHasPet() {
+      return false;
     }
   }
 }

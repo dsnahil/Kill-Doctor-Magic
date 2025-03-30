@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 
 import controller.Icommand;
 import controller.commands.PickupCommand;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +21,7 @@ public class PickupCommandTest {
   private Iworld mockWorld;
 
   /**
-   * Sets up the minimal mock world for testing SaveMapCommand.
+   * Sets up the test fixture by initializing a new MockWorld instance.
    */
   @Before
   public void setUp() {
@@ -29,19 +30,14 @@ public class PickupCommandTest {
 
   @Test
   public void testExecuteValidPickup() {
-    // We'll pick up "TestItem" which is in the current space
     pickupCommand = new PickupCommand("MockPlayer", "TestItem");
     pickupCommand.execute(mockWorld);
-
-    // If no exception, success. Optionally verify the item is in the player's
-    // inventory
     MockWorld w = (MockWorld) mockWorld;
     assertTrue(w.mockPlayer.getPlayerItems().contains("TestItem"));
   }
 
   @Test
   public void testExecuteInvalidPickup() {
-    // Attempt picking up an item that doesn't exist
     pickupCommand = new PickupCommand("MockPlayer", "Nonexistent");
     try {
       pickupCommand.execute(mockWorld);
@@ -71,7 +67,6 @@ public class PickupCommandTest {
       return Collections.singletonList(mockPlayer);
     }
 
-    // The rest are stubs:
     @Override
     public void addPlayer(String name, int spaceIndex) {
       throw new UnsupportedOperationException();
@@ -133,8 +128,24 @@ public class PickupCommandTest {
     }
 
     @Override
-    public java.awt.image.BufferedImage generateWorldMap() {
+    public BufferedImage generateWorldMap() {
       throw new UnsupportedOperationException();
+    }
+
+    // New stubs:
+    @Override
+    public Ipet getPet() {
+      return null;
+    }
+
+    @Override
+    public String viewTargetCharacter() {
+      return null;
+    }
+
+    @Override
+    public boolean canPlayerSee(Iplayer a, Iplayer b) {
+      return false;
     }
   }
 
@@ -164,13 +175,12 @@ public class PickupCommandTest {
     }
 
     @Override
-    public void removeItem(String itemName) {
-      inventory.remove(itemName);
+    public void removeItem(String item) {
+      inventory.remove(item);
     }
 
     @Override
     public void pickUpItem(String itemName) {
-      // If item not found, throw
       if (!location.items.contains(itemName)) {
         throw new IllegalArgumentException("Item not found in this space!");
       }
@@ -196,7 +206,6 @@ public class PickupCommandTest {
     public MockSpace(String name) {
       this.spaceName = name;
       this.items = new ArrayList<>();
-      // Put "TestItem" in the space
       items.add("TestItem");
     }
 
@@ -237,6 +246,17 @@ public class PickupCommandTest {
     @Override
     public List<String> getItems() {
       return items;
+    }
+
+    // New methods:
+    @Override
+    public void setHasPet(boolean flag) {
+      // no-op for testing
+    }
+
+    @Override
+    public boolean getHasPet() {
+      return false;
     }
   }
 }

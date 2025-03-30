@@ -5,9 +5,8 @@ import java.util.List;
 
 /**
  * Represents the world or game board in the "Kill Doctor Lucky" game. This
- * interface defines all the functionalities required to interact with the game
- * world, including player and space management, game state checks, and world
- * visualization.
+ * interface defines all functionalities to interact with the game world,
+ * including player/space management, game state checks, and visualization.
  */
 public interface Iworld {
 
@@ -26,17 +25,16 @@ public interface Iworld {
   List<String> getSpaceItems();
 
   /**
-   * Checks if the game is not over yet.
+   * Checks if the game is still ongoing.
    *
-   * @return true if the game is still ongoing, false otherwise.
+   * @return true if the game is not over, false otherwise.
    */
   boolean isGameNotOver();
 
   /**
    * Gets the name of the player who won the game.
    *
-   * @return The winner's name if there is one, otherwise an empty string or a
-   *         relevant message.
+   * @return The winner's name if there is one, otherwise "No one".
    */
   String getWinner();
 
@@ -121,4 +119,29 @@ public interface Iworld {
    * @param name The name of the player.
    */
   void setLastAttacker(String name);
+
+  /**
+   * Returns a concise description of the target character, e.g., "Doctor Lucky
+   * (50 HP) at Armory".
+   *
+   * @return a string describing the target
+   */
+  String viewTargetCharacter();
+
+  /**
+   * Retrieves the pet associated with the target character.
+   *
+   * @return the IPet object representing the pet
+   */
+  Ipet getPet();
+
+  /**
+   * Determines if one player (pA) can see another (pB). Typically, a player can
+   * see another if they are in the same space or in a neighboring space.
+   *
+   * @param a the observing player
+   * @param b the player to be observed
+   * @return true if pA can see pB, false otherwise
+   */
+  boolean canPlayerSee(Iplayer a, Iplayer b);
 }

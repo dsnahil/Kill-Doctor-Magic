@@ -5,8 +5,7 @@ import java.util.List;
 
 /**
  * Represents a space on the "Kill Doctor Lucky" game board. Each space is
- * defined by its position on the grid (upper and lower bounds) and can contain
- * items.
+ * defined by its position on the grid and can contain items.
  */
 public class Space implements Ispace {
   private int upperRow;
@@ -16,15 +15,16 @@ public class Space implements Ispace {
   private String name;
   private List<Iitem> items;
   private List<String> neighbors;
+  private boolean hasPet; // indicates if the pet is in this space
 
   /**
    * Constructs a new Space with specified boundaries and name.
    *
-   * @param upperRow the upper row boundary of the space on the game board.
-   * @param upperCol the upper column boundary of the space.
-   * @param lowerRow the lower row boundary of the space on the game board.
-   * @param lowerCol the lower column boundary of the space.
-   * @param name     the name of the space, used for identification.
+   * @param upperRow the upper row boundary of the space on the game board
+   * @param upperCol the upper column boundary of the space
+   * @param lowerRow the lower row boundary of the space on the game board
+   * @param lowerCol the lower column boundary of the space
+   * @param name     the name of the space
    */
   public Space(int upperRow, int upperCol, int lowerRow, int lowerCol, String name) {
     this.upperRow = upperRow;
@@ -34,10 +34,13 @@ public class Space implements Ispace {
     this.name = name;
     this.items = new ArrayList<>();
     this.neighbors = new ArrayList<>();
+    this.hasPet = false;
   }
 
   /**
-   * Copy constructor to create a defensive copy.
+   * Copy constructor to create a defensive copy of an existing Space.
+   *
+   * @param other the space to copy
    */
   public Space(Space other) {
     this.upperRow = other.upperRow;
@@ -47,11 +50,13 @@ public class Space implements Ispace {
     this.name = other.name;
     this.items = new ArrayList<>(other.items);
     this.neighbors = new ArrayList<>(other.neighbors);
+    this.hasPet = other.hasPet;
   }
 
   /**
-   * Returns the internal list of item objects. (Package‑private to avoid external
-   * modification.)
+   * Returns the internal list of item objects (package-private).
+   *
+   * @return the list of Iitem objects in this space
    */
   List<Iitem> getItemObjects() {
     return items;
@@ -82,14 +87,6 @@ public class Space implements Ispace {
     return name;
   }
 
-  /**
-   * Adds an item to the space by its name. (Package‑private to restrict external
-   * use.)
-   */
-  void addItem(String itemName) {
-    addItem(new Item(-1, 0, itemName));
-  }
-
   @Override
   public void addItem(Iitem item) {
     items.add(item);
@@ -110,10 +107,22 @@ public class Space implements Ispace {
   }
 
   /**
-   * Adds a neighboring space to this space’s list. (Package‑private for internal
-   * use only.)
+   * Adds a neighboring space to this space's list of neighbors. (package-private
+   * for internal use)
+   *
+   * @param neighborName the name of the neighboring space
    */
   void addNeighbor(String neighborName) {
     neighbors.add(neighborName);
+  }
+
+  @Override
+  public void setHasPet(boolean flag) {
+    this.hasPet = flag;
+  }
+
+  @Override
+  public boolean getHasPet() {
+    return this.hasPet;
   }
 }

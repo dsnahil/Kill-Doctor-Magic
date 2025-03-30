@@ -26,10 +26,6 @@ public class DisplayPlayerCommandTest {
     mockWorld = new MockWorld();
   }
 
-  /**
-   * Tests that executing DisplayPlayerCommand for a valid player does not throw
-   * an exception.
-   */
   @Test
   public void testExecuteDisplayValidPlayer() {
     displayCommand = new DisplayPlayerCommand("MockPlayer");
@@ -41,17 +37,15 @@ public class DisplayPlayerCommandTest {
     assertTrue(true);
   }
 
-  /**
-   * Tests that executing DisplayPlayerCommand for an unknown player throws an
-   * exception.
-   */
   @Test(expected = IllegalArgumentException.class)
   public void testExecuteDisplayUnknownPlayer() {
     displayCommand = new DisplayPlayerCommand("Unknown");
     displayCommand.execute(mockWorld);
   }
 
-  // Minimal mock implementation of Iworld.
+  /**
+   * Minimal mock Iworld for testing DisplayPlayerCommand.
+   */
   private class MockWorld implements Iworld {
     private Iplayer mockPlayer = new MockPlayer("MockPlayer");
 
@@ -68,7 +62,6 @@ public class DisplayPlayerCommandTest {
       return Collections.singletonList(mockPlayer);
     }
 
-    // For display, we can stub getSpaceInfo, though it won't be used here.
     @Override
     public String getSpaceInfo(String spaceName) {
       return "Space: " + spaceName;
@@ -79,7 +72,6 @@ public class DisplayPlayerCommandTest {
       return null;
     }
 
-    // The rest are stubs:
     @Override
     public void addPlayer(String name, int spaceIndex) {
     }
@@ -130,16 +122,33 @@ public class DisplayPlayerCommandTest {
     public java.awt.image.BufferedImage generateWorldMap() {
       return null;
     }
+
+    // New stubs:
+    @Override
+    public Ipet getPet() {
+      return null;
+    }
+
+    @Override
+    public String viewTargetCharacter() {
+      return null;
+    }
+
+    @Override
+    public boolean canPlayerSee(Iplayer a, Iplayer b) {
+      return false;
+    }
   }
 
-  // Minimal mock implementation of Iplayer.
+  /**
+   * Minimal mock player for testing.
+   */
   private class MockPlayer implements Iplayer {
     private String name;
     private Ispace location;
 
     public MockPlayer(String name) {
       this.name = name;
-      // Provide a valid location using our minimal mock space.
       this.location = new MockSpace("MockLocation");
     }
 
@@ -175,7 +184,9 @@ public class DisplayPlayerCommandTest {
     }
   }
 
-  // Minimal mock implementation of Ispace.
+  /**
+   * Minimal mock space for testing.
+   */
   private class MockSpace implements Ispace {
     private String spaceName;
 
@@ -193,7 +204,6 @@ public class DisplayPlayerCommandTest {
       return Collections.emptyList();
     }
 
-    // The rest are stubs:
     @Override
     public int getUpperRow() {
       return 0;
@@ -216,11 +226,23 @@ public class DisplayPlayerCommandTest {
 
     @Override
     public void addItem(Iitem item) {
+      // Stub
     }
 
     @Override
     public List<String> getItems() {
       return Collections.emptyList();
+    }
+
+    // New methods required by Ispace:
+    @Override
+    public void setHasPet(boolean flag) {
+      // For testing, this can be a no-op.
+    }
+
+    @Override
+    public boolean getHasPet() {
+      return false;
     }
   }
 }

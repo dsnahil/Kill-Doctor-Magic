@@ -3,16 +3,13 @@ package controller;
 import java.io.IOException;
 
 /**
- * Represents a controller for the Kill Doctor Lucky game. The controller is
- * responsible for handling user input/output and coordinating actions on the
- * model.
+ * Represents a controller for the Kill Doctor Lucky game.
  */
 public interface Icontroller {
-
   /**
-   * Starts or plays the game until it ends or the user quits.
+   * Starts the game.
    *
-   * @throws IOException if transmission of output fails
+   * @throws IOException if output transmission fails.
    */
   void startGame() throws IOException;
 }

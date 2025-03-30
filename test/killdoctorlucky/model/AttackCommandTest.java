@@ -19,7 +19,7 @@ public class AttackCommandTest {
   private Iworld mockWorld;
 
   /**
-   * Sets up the minimal mock world for testing SaveMapCommand.
+   * Sets up the minimal mock world for testing AttackCommand.
    */
   @Before
   public void setUp() {
@@ -34,7 +34,7 @@ public class AttackCommandTest {
     attackCommand = new AttackCommand("MockPlayer", "Sword");
     attackCommand.execute(mockWorld);
 
-    // If no exception, success. Check if Doctor Lucky's HP decreased from 50 -> 40
+    // Check if Doctor Lucky's HP decreased from 50 -> 40
     assertEquals(40, TargetCharacter.getInstance().getTargetHealth());
   }
 
@@ -44,11 +44,13 @@ public class AttackCommandTest {
     attackCommand = new AttackCommand("MockPlayer", "Gun");
     attackCommand.execute(mockWorld);
 
-    // Should print "Weapon not found in inventory!" or no damage done
-    // We'll just confirm HP is still 50
+    // Confirm HP is still 50
     assertEquals(50, TargetCharacter.getInstance().getTargetHealth());
   }
 
+  /**
+   * Minimal mock Iworld for testing AttackCommand.
+   */
   private class MockWorld implements Iworld {
     private Iplayer mockPlayer;
 
@@ -69,7 +71,6 @@ public class AttackCommandTest {
       return Collections.singletonList(mockPlayer);
     }
 
-    // The rest are stubs or unsupported
     @Override
     public void addPlayer(String name, int spaceIndex) {
     }
@@ -119,7 +120,7 @@ public class AttackCommandTest {
 
     @Override
     public Ispace getTargetLocation() {
-      return null;
+      return null; // pretend the player is in the same space as Doctor Lucky
     }
 
     @Override
@@ -130,8 +131,27 @@ public class AttackCommandTest {
     public java.awt.image.BufferedImage generateWorldMap() {
       return null;
     }
+
+    // New stubs to satisfy updated Iworld interface:
+    @Override
+    public Ipet getPet() {
+      return null;
+    }
+
+    @Override
+    public String viewTargetCharacter() {
+      return null;
+    }
+
+    @Override
+    public boolean canPlayerSee(Iplayer a, Iplayer b) {
+      return false;
+    }
   }
 
+  /**
+   * Minimal mock player for testing AttackCommand.
+   */
   private class MockPlayer implements Iplayer {
     private String name;
     private List<String> inventory;
@@ -174,7 +194,6 @@ public class AttackCommandTest {
         System.out.println("Weapon not found in inventory!");
         return;
       }
-      // remove weapon from inventory, do 10 damage
       removeItem(weapon);
       TargetCharacter.getInstance().decreaseHealth(10);
       System.out.println(name + " attacked Doctor Lucky with " + weapon + "!");
