@@ -1,6 +1,9 @@
 36 30 Doctor Lucky's Mansion
 50 Doctor Lucky
+<<<<<<< HEAD
 Mi Meow
+=======
+>>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
 21
 22 19 23 26 Armory
 16 21 21 28 Billiard Room
@@ -43,4 +46,8 @@ Mi Meow
 11 2 Tight Hat
 19 2 Piece of Rope
 9 3 Silken Cord
+<<<<<<< HEAD
 7 2 Loud Noise
+=======
+7 2 Loud Noise
+>>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
