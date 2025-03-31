@@ -1,0 +1,119 @@
+Welcome to Kill Doctor Lucky!
+World Loaded!
+Mansion has been built successfully!
+
+=== Help Menu ===
+move     - Moves your player to an adjacent room. You will be shown valid neighbor rooms.
+pickup   - Picks up an item from the current room. The room's available items are listed.
+attack   - Attacks Doctor Lucky using a weapon from your inventory. Make sure you have picked up a valid weapon.
+look     - Displays detailed information about your current space (including visible neighbors).
+describe - Displays your player details (location and inventory).
+savemap  - Saves the current world map as a PNG file.
+quit     - Exits the game.
+Note: Commands and item/space names are case-insensitive. Ensure you are in the correct room to pick up a specific item.
+=================
+
+Debug: Player Alice added at space Armory
+
+ Turn 1 
+Current Player: Alice
+Doctor Lucky HP: 50
+Enter command (move, pickup, look, attack, describe, savemap, quit): 
+move
+Enter space name: 
+Armory
+Command failed: Cannot move to a non-adjacent space!
+
+--- Turn 2 ---
+Current Player: CPU
+Doctor Lucky HP: 50
+CPU looks around:
+Space: Kitchen
+Items: [Crepe Pan, Sharp Knife]
+Neighbors: [Dining Hall, Parlor, Wine Cellar]
+Coordinates: [16, 3] to [21, 10]
+
+Players Present: [CPU]
+--- Visible Neighboring Spaces ---
+Dining Hall (Items: [], Players: [])
+Parlor (Items: [], Players: [])
+Wine Cellar (Items: [Rat Poison, Piece of Rope], Players: [])
+
+
+--- Turn 3 ---
+Current Player: Alice
+Doctor Lucky HP: 50
+Enter command (move, pickup, look, attack, describe, savemap, quit): 
+look
+Space: Armory
+Items: [Revolver]
+Neighbors: [Billiard Room, Dining Hall, Drawing Room]
+Coordinates: [22, 19] to [23, 26]
+
+Players Present: [Alice]
+--- Visible Neighboring Spaces ---
+Billiard Room (Items: [Billiard Cue], Players: [])
+Dining Hall (Items: [], Players: [])
+Drawing Room (Items: [Letter Opener], Players: [])
+
+
+--- Turn 4 ---
+Current Player: CPU
+Doctor Lucky HP: 50
+CPU looks around:
+Space: Kitchen
+Items: [Crepe Pan, Sharp Knife]
+Neighbors: [Dining Hall, Parlor, Wine Cellar]
+Coordinates: [16, 3] to [21, 10]
+
+Players Present: [CPU]
+--- Visible Neighboring Spaces ---
+Dining Hall (Items: [], Players: [])
+Parlor (Items: [], Players: [])
+Wine Cellar (Items: [Rat Poison, Piece of Rope], Players: [])
+
+
+--- Turn 5 ---
+Current Player: Alice
+Doctor Lucky HP: 50
+Enter command (move, pickup, look, attack, describe, savemap, quit): 
+move
+Enter space name: 
+Drawing Room
+
+--- Turn 6 ---
+Current Player: CPU
+Doctor Lucky HP: 50
+Picked up: Sharp Knife
+CPU picks up Sharp Knife
+
+--- Turn 7 ---
+Current Player: Alice
+Doctor Lucky HP: 50
+Enter command (move, pickup, look, attack, describe, savemap, quit): 
+pickup
+Enter item name: 
+Letter Opener
+Picked up: Letter Opener
+
+--- Turn 8 ---
+Current Player: CPU
+Doctor Lucky HP: 50
+You must be in the same room as Doctor Lucky to attack!
+CPU attacks Doctor Lucky with Sharp Knife
+
+--- Turn 9 ---
+Current Player: Alice
+Doctor Lucky HP: 50
+Enter command (move, pickup, look, attack, describe, savemap, quit): 
+attack
+Enter weapon name: 
+Letter Opener
+You must be in the same room as Doctor Lucky to attack!
+
+--- Turn 10 ---
+Current Player: CPU
+Doctor Lucky HP: 50
+Picked up: Crepe Pan
+CPU picks up Crepe Pan
+Maximum number of turns reached. Game ends in a draw!
