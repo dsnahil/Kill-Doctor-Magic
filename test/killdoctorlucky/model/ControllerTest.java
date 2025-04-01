@@ -3,6 +3,7 @@ package killdoctorlucky.model;
 import static org.junit.Assert.assertTrue;
 
 import controller.ControllerImpl;
+import java.io.IOException;
 import java.io.StringReader;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import org.junit.Test;
  */
 public class ControllerTest {
   @Test
-  public void testControllerQuitCommand() throws Exception {
+  public void testControllerQuitCommand() throws IOException {
     String input = "quit\n";
     StringBuilder output = new StringBuilder();
     Iworld world = new World("res/mansion.txt");

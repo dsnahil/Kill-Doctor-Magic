@@ -1,7 +1,6 @@
 package killdoctorlucky.model;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import controller.Icommand;
 import controller.commands.LookCommand;
@@ -29,11 +28,8 @@ public class LookCommandTest {
   @Test
   public void testExecuteLook() {
     lookCommand = new LookCommand("MockPlayer");
-    try {
-      lookCommand.execute(mockWorld);
-    } catch (Exception e) {
-      fail("LookCommand.execute() threw an exception: " + e.getMessage());
-    }
+    // Simply calling execute; if an exception occurs the test will fail.
+    lookCommand.execute(mockWorld);
     assertTrue(true);
   }
 
@@ -143,7 +139,7 @@ public class LookCommandTest {
 
     public MockPlayer(String name) {
       this.name = name;
-      this.location = new MockSpace("MockSpace");
+      this.location = new MockSpace("MockLocation");
     }
 
     @Override
@@ -217,6 +213,7 @@ public class LookCommandTest {
 
     @Override
     public void addItem(Iitem item) {
+      // Stub
     }
 
     @Override
@@ -224,7 +221,7 @@ public class LookCommandTest {
       return Collections.emptyList();
     }
 
-    // New methods:
+    // New methods required by Ispace:
     @Override
     public void setHasPet(boolean flag) {
       // no-op for testing

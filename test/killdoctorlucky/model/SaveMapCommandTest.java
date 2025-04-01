@@ -15,9 +15,11 @@ import org.junit.Test;
  */
 public class SaveMapCommandTest {
 
+  // Static fields must come before instance fields.
+  private static final String TEST_FILE = "testmap.png";
+
   private Icommand saveMapCommand;
   private Iworld mockWorld;
-  private static final String TEST_FILE = "testmap.png";
 
   /**
    * Sets up the minimal mock world for testing SaveMapCommand.
@@ -34,7 +36,7 @@ public class SaveMapCommandTest {
 
     File f = new File(TEST_FILE);
     if (f.exists()) {
-      // Clean up the file
+      // Clean up the file after the test.
       f.delete();
       assertTrue(true);
     } else {
@@ -44,9 +46,8 @@ public class SaveMapCommandTest {
 
   @Test
   public void testExecuteSaveMapFailure() {
-    // Provide an invalid filename or make the mock throw an exception
+    // Provide an invalid filename (or modify the mock to throw an exception).
     Icommand badCommand = new SaveMapCommand("InvalidDir/testmap.png");
-    // Our mock won't actually fail, but you could modify it to do so
     badCommand.execute(mockWorld);
     assertTrue(true);
   }
@@ -58,7 +59,7 @@ public class SaveMapCommandTest {
 
     @Override
     public BufferedImage generateWorldMap() {
-      // Return a 10x10 blank image
+      // Return a 10x10 blank image.
       return new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
     }
 
@@ -128,7 +129,7 @@ public class SaveMapCommandTest {
     public void moveTargetCharacter() {
     }
 
-    // New methods to satisfy updated Iworld interface:
+    // New stubs to satisfy updated Iworld interface:
     @Override
     public Ipet getPet() {
       return null; // Return null for testing purposes.

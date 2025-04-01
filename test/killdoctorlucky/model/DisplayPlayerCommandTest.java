@@ -31,9 +31,10 @@ public class DisplayPlayerCommandTest {
     displayCommand = new DisplayPlayerCommand("MockPlayer");
     try {
       displayCommand.execute(mockWorld);
-    } catch (Exception e) {
-      fail("DisplayPlayerCommand.execute() threw an exception: " + e.getMessage());
+    } catch (IllegalArgumentException e) {
+      fail("DisplayPlayerCommand.execute() threw an IllegalArgumentException: " + e.getMessage());
     }
+    // If no exception is thrown, the test passes.
     assertTrue(true);
   }
 
