@@ -1,0 +1,36 @@
+Welcome to Kill Doctor Lucky!
+World Loaded!
+Mansion has been built successfully!
+
+=== Help Menu ===
+move     - Moves your player to an adjacent room. You will be shown valid neighbor rooms.
+pickup   - Picks up an item from the current room. The room's available items are listed.
+attack   - Attacks the target using a weapon from your inventory. Ensure you have a valid weapon.
+look     - Displays detailed information about your current space.
+describe - Displays your player details (location and inventory).
+savemap  - Saves the current world map as a PNG file.
+movepet  - Moves the target character's pet to a specified adjacent space.
+quit     - Exits the game.
+Note: Commands and item/space names are case-insensitive.
+=================
+
+Player Tony added at space Armory
+Player Snahil added at space Billiard Room
+
+--- Turn 1 ---
+Current Player: Tony
+Target: Doctor Lucky (50 HP) at Armory
+Enter command (move, pickup, look, attack, describe, savemap, movepet, quit): 
+look
+[Space information output here...]
+
+--- Turn 2 ---
+Current Player: Snahil
+Target: Doctor Lucky (50 HP) at Billiard Room
+Enter command (move, pickup, look, attack, describe, savemap, movepet, quit): 
+describe
+[Player details output here...]
+
+... (Turns 3 through 10 with various actions, none of which manage to kill Doctor Lucky) ...
+
+Maximum number of turns reached. Game ends in a draw!

@@ -1,0 +1,50 @@
+Welcome to Kill Doctor Lucky!
+World Loaded!
+Mansion has been built successfully!
+
+=== Help Menu ===
+move     - Moves your player to an adjacent room. You will be shown valid neighbor rooms.
+pickup   - Picks up an item from the current room. The room's available items are listed.
+attack   - Attacks the target using a weapon from your inventory. Ensure you have a valid weapon.
+look     - Displays detailed information about your current space.
+describe - Displays your player details (location and inventory).
+savemap  - Saves the current world map as a PNG file.
+movepet  - Moves the target character's pet to a specified adjacent space.
+quit     - Exits the game.
+Note: Commands and item/space names are case-insensitive.
+=================
+
+Player Tony added at space Armory
+Player Snahil added at space Billiard Room
+
+--- Turn 3 ---
+Current Player: Tony
+Target: Doctor Lucky (50 HP) at Armory
+Enter command (move, pickup, look, attack, describe, savemap, movepet, quit): 
+attack
+Enter weapon name: 
+Civil War Cannon
+Tony attacked with Civil War Cannon for 15 damage!
+INFO: Tony executed attack with Civil War Cannon
+
+--- Turn 4 ---
+Current Player: Snahil
+Target: Doctor Lucky (35 HP) at Billiard Room
+Enter command (move, pickup, look, attack, describe, savemap, movepet, quit): 
+attack
+Enter weapon name: 
+Revolver
+Snahil attacked with Revolver for 15 damage!
+INFO: Snahil executed attack with Revolver
+
+--- Turn 5 ---
+Current Player: Tony
+Target: Doctor Lucky (20 HP) at Armory
+Enter command (move, pickup, look, attack, describe, savemap, movepet, quit): 
+attack
+Enter weapon name: 
+Billiard Cue
+Tony attacked with Billiard Cue for 20 damage!
+INFO: Tony executed attack with Billiard Cue
+
+Game Over! Tony has killed Doctor Lucky!
