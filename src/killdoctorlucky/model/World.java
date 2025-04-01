@@ -18,10 +18,6 @@ import java.util.Set;
  * contains the rooms, items, and game progression logic.
  */
 public class World implements Iworld {
-  private List<Iitem> items;
-  private String winnerName = null;
-  private String lastAttacker = null;
-
   protected int rows;
   protected int cols;
   protected ItargetCharacter targetCharacter;
@@ -29,10 +25,13 @@ public class World implements Iworld {
   protected List<Iplayer> players;
   protected int targetLocationIndex;
   protected Ipet pet;
+  protected List<Ispace> petPath; // Changed to protected for testing extra credit
+  protected int petIndex; // Changed to protected for testing extra credit
 
-  // Extra credit: fields for wandering pet (DFS traversal)
-  protected List<Ispace> petPath; // Changed to protected for testing
-  protected int petIndex; // Changed to protected for testing
+  // Private fields
+  private List<Iitem> items;
+  private String winnerName = null;
+  private String lastAttacker = null;
 
   /**
    * Constructs a new World object using the given file path.

@@ -8,11 +8,15 @@ import java.util.List;
  * player attributes such as name, location, and inventory of items.
  */
 public class Player implements Iplayer {
+  public Iworld world;
+
+  // Protected fields
+  protected List<Iitem> inventory;
+
+  // Private fields
   private final String name;
   private Ispace location;
-  protected List<Iitem> inventory;
   private final int maxInventory = 5;
-  public Iworld world;
 
   /**
    * Constructs a new Player with the specified name, initial location, and the
