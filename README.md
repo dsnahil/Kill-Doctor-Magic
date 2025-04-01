@@ -70,10 +70,18 @@ Kill Doctor Lucky is a text-based, turn-based game in which human and computer-c
      - **First argument:** Path to the mansion file (default: `res/mansion.txt`).
      - **Second argument:** Maximum number of turns (default: `10`).
 
-   **Example:**
-   ```bash
-   java -cp bin controller.Driver res/mansion.txt 10
-   ```
+2. **Run the Executable JAR:**
+
+   - An executable JAR file named runnable.jar is provided in the res/ folder.
+   - To run the game using the JAR file, open a command prompt or terminal in the project’s root directory and execute:
+     ```bash
+     java -jar res/runnable.jar
+     ```
+   - This JAR file is pre-packaged with all the necessary classes and resources, so you can simply run it without additional classpath settings.
+   - If you wish to pass arguments (such as a custom mansion file or maximum turn count), you can do so as follows:
+     ```bash
+     java -cp bin controller.Driver res/mansion.txt 10
+     ```
 
 3. **Gameplay:**
    - When the game starts, follow the on-screen help menu.
