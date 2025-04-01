@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -17,16 +18,17 @@ import java.util.Set;
  * contains the rooms, items, and game progression logic.
  */
 public class World implements Iworld {
+  private List<Iitem> items;
+  private String winnerName = null;
+  private String lastAttacker = null;
+
   protected int rows;
   protected int cols;
   protected ItargetCharacter targetCharacter;
-  protected List<Ispace> spaces; // Changed to protected for testing
-  private List<Iitem> items;
-  protected List<Iplayer> players; // Changed to protected for testing
-  protected int targetLocationIndex; // Changed to protected for testing
-  private String winnerName = null;
-  private String lastAttacker = null;
-  protected Ipet pet; // Changed to protected for testing
+  protected List<Ispace> spaces;
+  protected List<Iplayer> players;
+  protected int targetLocationIndex;
+  protected Ipet pet;
 
   // Extra credit: fields for wandering pet (DFS traversal)
   protected List<Ispace> petPath; // Changed to protected for testing
@@ -116,8 +118,8 @@ public class World implements Iworld {
           }
           spaceName = spaceName.trim();
           spaces.add(new Space(x1, y1, x2, y2, spaceName));
-        } catch (Exception e) {
-          throw new IOException("Error parsing space details at line " + (i + 4));
+        } catch (NumberFormatException | NoSuchElementException e) {
+          throw new IOException("Error parsing space details at line " + (i + 4), e);
         } finally {
           lineScanner.close();
         }
@@ -146,8 +148,8 @@ public class World implements Iworld {
           }
           itemName = itemName.trim();
           items.add(new Item(spaceIndex, damage, itemName));
-        } catch (Exception e) {
-          throw new IOException("Error parsing item details at line " + (i + numSpaces + 4));
+        } catch (NumberFormatException | NoSuchElementException e) {
+          throw new IOException("Error parsing item details at line " + (i + numSpaces + 4), e);
         } finally {
           lineScanner.close();
         }

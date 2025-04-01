@@ -8,11 +8,11 @@ import java.util.List;
  * player attributes such as name, location, and inventory of items.
  */
 public class Player implements Iplayer {
-  public Iworld world;
   private final String name;
   private Ispace location;
   protected List<Iitem> inventory;
   private final int maxInventory = 5;
+  public Iworld world;
 
   /**
    * Constructs a new Player with the specified name, initial location, and the
@@ -102,7 +102,7 @@ public class Player implements Iplayer {
       }
     }
     // If no weapon is available, perform a default 1-damage attack.
-    if (inventory.isEmpty() || weapon.equalsIgnoreCase("default")) {
+    if (inventory.isEmpty() || "default".equalsIgnoreCase(weapon)) {
       System.out.println(name + " pokes the target in the eye (1 damage)!");
       world.setLastAttacker(this.name);
       TargetCharacter.getInstance().decreaseHealth(1);

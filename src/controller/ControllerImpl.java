@@ -75,7 +75,7 @@ public class ControllerImpl implements Icontroller {
           break;
         }
         String userCmd = sc.nextLine().trim().toLowerCase();
-        if (userCmd.equals("quit")) {
+        if ("quit".equals(userCmd)) {
           appendMessage("Exiting the game. Thanks for playing!");
           break;
         }

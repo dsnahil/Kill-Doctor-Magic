@@ -9,9 +9,10 @@ import killdoctorlucky.model.Iworld;
  * Command for a player to attack the target using a chosen weapon.
  */
 public class AttackCommand implements Icommand {
+  private static final Logger logger = Logger.getLogger(AttackCommand.class.getName());
+
   private final String playerName;
   private final String weaponName;
-  private static final Logger logger = Logger.getLogger(AttackCommand.class.getName());
 
   /**
    * Constructs an AttackCommand.
