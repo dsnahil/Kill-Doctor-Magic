@@ -55,26 +55,13 @@ public class Driver {
    */
   private static void printHelp() {
     System.out.println("\n=== Help Menu ===");
-    System.out.println(
-<<<<<<< HEAD
-        "move     - Moves your player to an adjacent room. You will be shown valid neighbor rooms.");
-    System.out.println(
-        "pickup   - Picks up an item from the current room. The room's available items are listed.");
-    System.out.println(
-        "attack   - Attacks the target using a weapon from your inventory. Ensure you have a valid weapon.");
-    System.out.println("look     - Displays detailed information about your current space.");
-=======
-        "move     - Moves your player to an adjacent room. "
+    System.out.println("move     - Moves your player to an adjacent room. "
         + "You will be shown valid neighbor rooms.");
-    System.out.println(
-        "pickup   - Picks up an item from the current room. "
+    System.out.println("pickup   - Picks up an item from the current room. "
         + "The room's available items are listed.");
-    System.out.println(
-        "attack   - Attacks the target using a weapon from your inventory. "
+    System.out.println("attack   - Attacks the target using a weapon from your inventory. "
         + "Ensure you have a valid weapon.");
-    System.out.println(
-        "look     - Displays detailed information about your current space.");
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
+    System.out.println("look     - Displays detailed information about your current space.");
     System.out.println("describe - Displays your player details (location and inventory).");
     System.out.println("savemap  - Saves the current world map as a PNG file.");
     System.out

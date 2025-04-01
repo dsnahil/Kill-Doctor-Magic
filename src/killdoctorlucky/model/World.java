@@ -7,38 +7,31 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-<<<<<<< HEAD
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-=======
-import java.util.List;
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
 
 /**
  * The World class represents the environment of the Kill Doctor Lucky game. It
  * contains the rooms, items, and game progression logic.
  */
 public class World implements Iworld {
-  private int rows;
-  private int cols;
-  private ItargetCharacter targetCharacter;
-  private List<Ispace> spaces;
+  protected int rows;
+  protected int cols;
+  protected ItargetCharacter targetCharacter;
+  protected List<Ispace> spaces; // Changed to protected for testing
   private List<Iitem> items;
-  private List<Iplayer> players;
-  private int targetLocationIndex;
+  protected List<Iplayer> players; // Changed to protected for testing
+  protected int targetLocationIndex; // Changed to protected for testing
   private String winnerName = null;
   private String lastAttacker = null;
-  private Ipet pet;
+  protected Ipet pet; // Changed to protected for testing
 
-<<<<<<< HEAD
   // Extra credit: fields for wandering pet (DFS traversal)
-  private List<Ispace> petPath;
-  private int petIndex;
+  protected List<Ispace> petPath; // Changed to protected for testing
+  protected int petIndex; // Changed to protected for testing
 
-=======
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
   /**
    * Constructs a new World object using the given file path.
    *
@@ -65,7 +58,6 @@ public class World implements Iworld {
       if (line == null || line.trim().isEmpty()) {
         throw new IOException("World details line is missing or empty in " + filePath);
       }
-<<<<<<< HEAD
       // Split on whitespace.
       String[] worldDetails = line.trim().split("\\s+");
       if (worldDetails.length < 3) {
@@ -75,14 +67,6 @@ public class World implements Iworld {
       rows = Integer.parseInt(worldDetails[0]);
       cols = Integer.parseInt(worldDetails[1]);
       // The third token is the mansion name (unused)
-=======
-      String[] worldDetails = line.trim().split("\\s+", 3);
-      if (worldDetails.length != 3) {
-        throw new IOException("Expected 3 tokens for world details, found " + worldDetails.length);
-      }
-      rows = Integer.parseInt(worldDetails[0]);
-      cols = Integer.parseInt(worldDetails[1]);
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
 
       // Read target character details.
       line = br.readLine();
@@ -98,11 +82,7 @@ public class World implements Iworld {
       TargetCharacter.setInstance(targetName, health);
       this.targetCharacter = TargetCharacter.getInstance();
 
-<<<<<<< HEAD
       // Read the pet's name (third line).
-=======
-      // New: Read the pet's name (third line).
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
       line = br.readLine();
       if (line == null || line.trim().isEmpty()) {
         throw new IOException("Target character pet details missing in " + filePath);
@@ -123,7 +103,6 @@ public class World implements Iworld {
         if (line == null || line.trim().isEmpty()) {
           throw new IOException("Missing space details for space " + i);
         }
-<<<<<<< HEAD
         // Use a Scanner to parse the line.
         Scanner lineScanner = new Scanner(line);
         try {
@@ -139,15 +118,9 @@ public class World implements Iworld {
           spaces.add(new Space(x1, y1, x2, y2, spaceName));
         } catch (Exception e) {
           throw new IOException("Error parsing space details at line " + (i + 4));
+        } finally {
+          lineScanner.close();
         }
-=======
-        String[] spaceDetails = line.trim().split("\\s+", 5);
-        if (spaceDetails.length < 5) {
-          throw new IOException("Invalid space format at line " + (i + 3));
-        }
-        spaces.add(new Space(Integer.parseInt(spaceDetails[0]), Integer.parseInt(spaceDetails[1]),
-            Integer.parseInt(spaceDetails[2]), Integer.parseInt(spaceDetails[3]), spaceDetails[4]));
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
       }
 
       // Read number of items.
@@ -163,7 +136,6 @@ public class World implements Iworld {
         if (line == null || line.trim().isEmpty()) {
           throw new IOException("Missing item details for item " + i);
         }
-<<<<<<< HEAD
         Scanner lineScanner = new Scanner(line);
         try {
           int spaceIndex = lineScanner.nextInt();
@@ -176,15 +148,9 @@ public class World implements Iworld {
           items.add(new Item(spaceIndex, damage, itemName));
         } catch (Exception e) {
           throw new IOException("Error parsing item details at line " + (i + numSpaces + 4));
+        } finally {
+          lineScanner.close();
         }
-=======
-        String[] itemDetails = line.trim().split("\\s+", 3);
-        if (itemDetails.length < 3) {
-          throw new IOException("Invalid item format at line " + (i + numSpaces + 4));
-        }
-        items.add(new Item(Integer.parseInt(itemDetails[0]), Integer.parseInt(itemDetails[1]),
-            itemDetails[2]));
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
       }
 
       // Assign items to spaces.
@@ -199,17 +165,12 @@ public class World implements Iworld {
       }
       establishNeighbors();
 
-<<<<<<< HEAD
       // Compute the DFS path for the wandering pet (extra credit).
       petPath = computePetPath();
       petIndex = 0;
 
       // Initialize target location and place the pet there.
       targetLocationIndex = 0; // Target starts at the first space.
-=======
-      // Initialize target location and place the pet there.
-      targetLocationIndex = 0; // Example: target starts at the first space.
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
       Ispace targetSpace = spaces.get(targetLocationIndex);
       pet.moveTo(targetSpace);
       if (targetSpace instanceof Space) {
@@ -304,7 +265,6 @@ public class World implements Iworld {
         + space.getLowerColumn() + ")";
   }
 
-<<<<<<< HEAD
   /**
    * Returns detailed information about a space based on its name. Now also
    * includes a line if the pet is present in that space.
@@ -312,8 +272,6 @@ public class World implements Iworld {
    * @param spaceName the name of the space.
    * @return a string containing detailed information about the space.
    */
-=======
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
   @Override
   public String getSpaceInfo(String spaceName) {
     Ispace s = getSpaceByName(spaceName);
@@ -329,7 +287,6 @@ public class World implements Iworld {
         playersInSpace.add(player.getPlayerName());
       }
     }
-<<<<<<< HEAD
     sb.append(playersInSpace).append("\n");
     // If the current space contains the pet, list it explicitly.
     if (s.getHasPet() && pet != null) {
@@ -342,15 +299,6 @@ public class World implements Iworld {
       Ispace neighbor = getSpaceByName(neighborName);
       if (neighbor != null) {
         // If neighbor has the pet, mark it as not visible.
-=======
-    sb.append(playersInSpace).append("\n").append("Coordinates: [").append(s.getUpperRow())
-        .append(", ").append(s.getUpperColumn()).append("] to [").append(s.getLowerRow())
-        .append(", ").append(s.getLowerColumn()).append("]\n")
-        .append("--- Visible Neighboring Spaces ---\n");
-    for (String neighborName : s.getNeighbors()) {
-      Ispace neighbor = getSpaceByName(neighborName);
-      if (neighbor != null) {
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
         if (((Space) neighbor).getHasPet()) {
           sb.append(neighbor.getSpaceName()).append(" (Not visible)\n");
         } else {
@@ -366,10 +314,7 @@ public class World implements Iworld {
   public Ispace getSpaceByName(String name) {
     for (Ispace space : spaces) {
       if (space.getSpaceName().equalsIgnoreCase(name)) {
-<<<<<<< HEAD
         // Return a defensive copy.
-=======
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
         return new Space((Space) space);
       }
     }
@@ -405,13 +350,10 @@ public class World implements Iworld {
 
   /**
    * Determines if two spaces are adjacent based on row/column overlap.
-<<<<<<< HEAD
    *
    * @param s1 the first space.
    * @param s2 the second space.
    * @return true if adjacent, false otherwise.
-=======
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
    */
   private boolean areAdjacent(Space s1, Space s2) {
     boolean horizontallyAdjacent = (Math.abs(s1.getLowerRow() - s2.getUpperRow()) <= 1
@@ -426,15 +368,12 @@ public class World implements Iworld {
 
   /**
    * Checks if two intervals [start1, end1] and [start2, end2] overlap.
-<<<<<<< HEAD
    *
    * @param start1 the start of the first interval.
    * @param end1   the end of the first interval.
    * @param start2 the start of the second interval.
    * @param end2   the end of the second interval.
    * @return true if the intervals overlap, false otherwise.
-=======
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
    */
   private boolean overlap(int start1, int end1, int start2, int end2) {
     return !(end1 < start2 || end2 < start1);
@@ -470,7 +409,6 @@ public class World implements Iworld {
     }
     return first.getNeighbors().contains(second.getSpaceName());
   }
-<<<<<<< HEAD
 
   /**
    * Computes a depth-first search (DFS) traversal path for the pet through all
@@ -478,7 +416,7 @@ public class World implements Iworld {
    *
    * @return a list of spaces representing the DFS traversal order.
    */
-  private List<Ispace> computePetPath() {
+  protected List<Ispace> computePetPath() {
     List<Ispace> path = new ArrayList<>();
     Set<String> visited = new HashSet<>();
     if (!spaces.isEmpty()) {
@@ -528,6 +466,4 @@ public class World implements Iworld {
       ((Space) nextSpace).setHasPet(true);
     }
   }
-=======
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
 }

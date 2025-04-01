@@ -65,11 +65,7 @@ public class ControllerImpl implements Icontroller {
       Iplayer currentPlayer = model.getPlayers().get(currentPlayerIndex);
       appendMessage("\n--- Turn " + (turnCount + 1) + " ---");
       appendMessage("Current Player: " + currentPlayer.getPlayerName());
-<<<<<<< HEAD
       // Display concise target info.
-=======
-      // New: Display concise target info.
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
       appendMessage("Target: " + model.viewTargetCharacter());
 
       if (isHumanPlayer(currentPlayer)) {
@@ -91,15 +87,12 @@ public class ControllerImpl implements Icontroller {
       // Move target automatically after each turn.
       model.moveTargetCharacter();
 
-<<<<<<< HEAD
       // Extra credit: move the pet automatically (wandering pet)
       // If the model is an instance of World, call movePetAutomatically.
       if (model instanceof killdoctorlucky.model.World) {
         ((killdoctorlucky.model.World) model).movePetAutomatically();
       }
 
-=======
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
       turnCount++;
       currentPlayerIndex = (currentPlayerIndex + 1) % model.getPlayers().size();
     }
@@ -163,10 +156,6 @@ public class ControllerImpl implements Icontroller {
         command = new SaveMapCommand(fileName);
         break;
       case "movepet":
-<<<<<<< HEAD
-=======
-        // New: Command to move the target's pet.
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
         appendMessage("Enter pet target space: ");
         String petSpaceName = sc.nextLine().trim();
         command = new MovePetCommand(petSpaceName);

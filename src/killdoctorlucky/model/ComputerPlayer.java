@@ -23,11 +23,7 @@ public class ComputerPlayer extends Player {
 
   /**
    * Constructs a ComputerPlayer with a specified random generator, allowing you
-<<<<<<< HEAD
    * to control randomness for testing or real gameplay.
-=======
-   * to control randomness for testing or real game play.
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
    *
    * @param name          the name of the computer player
    * @param startLocation the starting space for the player
@@ -41,7 +37,6 @@ public class ComputerPlayer extends Player {
 
   /**
    * Determines and executes the next action for the computer-controlled player.
-<<<<<<< HEAD
    * If the computer is in the same space as the target and is unseen by others,
    * it chooses deterministically to attack using the weapon in its inventory that
    * does the most damage. Otherwise, it falls back to a random action.
@@ -81,16 +76,6 @@ public class ComputerPlayer extends Player {
     switch (choice) {
       case 0:
         // Move: choose a random neighbor if available.
-=======
-   * The AI randomly selects between moving, picking up an item, attacking, or
-   * looking around.
-   */
-  public void takeTurn() {
-    int choice = randGen.nextInt(4); // randomly pick 0,1,2,3
-    switch (choice) {
-      case 0:
-        // Move: choose a random neighbor if available
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
         List<String> neighbors = getPlayerLocation().getNeighbors();
         if (!neighbors.isEmpty()) {
           String target = neighbors.get(randGen.nextInt(neighbors.size()));
@@ -101,11 +86,7 @@ public class ComputerPlayer extends Player {
         }
         break;
       case 1:
-<<<<<<< HEAD
         // Pickup: choose a random item from current space, if any.
-=======
-        // Pickup: choose a random item from current space, if any
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
         List<String> items = getPlayerLocation().getItems();
         if (!items.isEmpty()) {
           String item = items.get(randGen.nextInt(items.size()));
@@ -116,17 +97,10 @@ public class ComputerPlayer extends Player {
         }
         break;
       case 2:
-<<<<<<< HEAD
         // Attack: use a random weapon from inventory, or default if none.
         List<String> inventoryList = getPlayerItems();
         if (!inventoryList.isEmpty()) {
           String weapon = inventoryList.get(randGen.nextInt(inventoryList.size()));
-=======
-        // Attack: if inventory is not empty, pick a random weapon
-        List<String> inventory = getPlayerItems();
-        if (!inventory.isEmpty()) {
-          String weapon = inventory.get(randGen.nextInt(inventory.size()));
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
           attackDoctorLucky(weapon);
           System.out.println(getPlayerName() + " attacks with " + weapon);
         } else {
@@ -135,11 +109,7 @@ public class ComputerPlayer extends Player {
         }
         break;
       default:
-<<<<<<< HEAD
         // Look around.
-=======
-        // Look around as the default action
->>>>>>> b388029894fa2d2eab411bb08ddb10405bbd2fad
         System.out.println(getPlayerName() + " looks around:");
         System.out.println(world.getSpaceInfo(getPlayerLocation().getSpaceName()));
         break;
