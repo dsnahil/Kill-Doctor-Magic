@@ -1,6 +1,5 @@
 package controller.commands;
 
-import controller.Icommand;
 import java.util.logging.Logger;
 import killdoctorlucky.model.Iplayer;
 import killdoctorlucky.model.Iworld;

@@ -1,4 +1,4 @@
-package controller;
+package controller.commands;
 
 import killdoctorlucky.model.Iworld;
 

@@ -63,38 +63,45 @@ public class ControllerImpl implements Icontroller {
     // Game loop
     while (model.isGameNotOver() && turnCount < maxTurns) {
       Iplayer currentPlayer = model.getPlayers().get(currentPlayerIndex);
+      // Print turn header only once per turn.
       appendMessage("\n--- Turn " + (turnCount + 1) + " ---");
       appendMessage("Current Player: " + currentPlayer.getPlayerName());
-      // Display concise target info.
       appendMessage("Target: " + model.viewTargetCharacter());
 
+      boolean commandConsumesTurn = false;
       if (isHumanPlayer(currentPlayer)) {
-        appendMessage(
-            "Enter command (move, pickup, look, attack, describe, savemap, movepet, quit): ");
-        if (!sc.hasNext()) {
-          break;
+        // Loop within the turn until a command that consumes the turn is executed.
+        while (!commandConsumesTurn) {
+          appendMessage(
+              "Enter command (move, pickup, look, attack, describe, savemap, movepet, quit): ");
+          if (!sc.hasNext()) {
+            break;
+          }
+          String userCmd = sc.nextLine().trim().toLowerCase();
+          if ("quit".equals(userCmd)) {
+            appendMessage("Exiting the game. Thanks for playing!");
+            return;
+          }
+          // Execute command; if it does not consume a turn, prompt again.
+          commandConsumesTurn = handleCommand(userCmd, sc, currentPlayer.getPlayerName());
         }
-        String userCmd = sc.nextLine().trim().toLowerCase();
-        if ("quit".equals(userCmd)) {
-          appendMessage("Exiting the game. Thanks for playing!");
-          break;
-        }
-        handleCommand(userCmd, sc, currentPlayer.getPlayerName());
       } else {
         ((ComputerPlayer) currentPlayer).takeTurn();
+        commandConsumesTurn = true;
       }
 
-      // Move target automatically after each turn.
-      model.moveTargetCharacter();
+      // Only update game state if a turn-consuming command was executed.
+      if (commandConsumesTurn) {
+        model.moveTargetCharacter();
 
-      // Extra credit: move the pet automatically (wandering pet)
-      // If the model is an instance of World, call movePetAutomatically.
-      if (model instanceof killdoctorlucky.model.World) {
-        ((killdoctorlucky.model.World) model).movePetAutomatically();
+        // Extra credit: move the pet automatically (wandering pet)
+        if (model instanceof killdoctorlucky.model.World) {
+          ((killdoctorlucky.model.World) model).movePetAutomatically();
+        }
+
+        turnCount++;
+        currentPlayerIndex = (currentPlayerIndex + 1) % model.getPlayers().size();
       }
-
-      turnCount++;
-      currentPlayerIndex = (currentPlayerIndex + 1) % model.getPlayers().size();
     }
 
     if (!model.isGameNotOver()) {
@@ -121,10 +128,13 @@ public class ControllerImpl implements Icontroller {
    * @param userCmd    the command string entered by the user.
    * @param sc         the Scanner for additional input.
    * @param playerName the name of the current player.
+   * @return true if the command should consume a turn; false otherwise.
    * @throws IOException if writing to the output fails.
    */
-  private void handleCommand(String userCmd, Scanner sc, String playerName) throws IOException {
-    controller.Icommand command;
+  private boolean handleCommand(String userCmd, Scanner sc, String playerName) throws IOException {
+    controller.commands.Icommand command;
+    // By default, commands consume a turn.
+    boolean consumesTurn = true;
     switch (userCmd) {
       case "move":
         appendMessage("Enter space name: ");
@@ -154,6 +164,8 @@ public class ControllerImpl implements Icontroller {
         appendMessage("Enter filename (e.g. worldmap.png): ");
         String fileName = sc.nextLine().trim();
         command = new SaveMapCommand(fileName);
+        // savemap is a free command; it should not consume the turn.
+        consumesTurn = false;
         break;
       case "movepet":
         appendMessage("Enter pet target space: ");
@@ -162,13 +174,15 @@ public class ControllerImpl implements Icontroller {
         break;
       default:
         appendMessage("Unknown command.");
-        return;
+        // Unknown commands do not consume a turn.
+        return false;
     }
     try {
       command.execute(model);
     } catch (IllegalArgumentException e) {
       appendMessage("Command failed: " + e.getMessage());
     }
+    return consumesTurn;
   }
 
   /**

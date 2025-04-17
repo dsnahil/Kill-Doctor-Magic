@@ -1,6 +1,5 @@
 package controller.commands;
 
-import controller.Icommand;
 import killdoctorlucky.model.Iplayer;
 import killdoctorlucky.model.Iworld;
 

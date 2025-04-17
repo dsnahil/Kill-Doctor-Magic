@@ -2,8 +2,9 @@ package killdoctorlucky.model;
 
 import static org.junit.Assert.assertEquals;
 
-import controller.Icommand;
 import controller.commands.AttackCommand;
+import controller.commands.Icommand;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -1,6 +1,5 @@
 package controller.commands;
 
-import controller.Icommand;
 import killdoctorlucky.model.Ipet;
 import killdoctorlucky.model.Ispace;
 import killdoctorlucky.model.Iworld;

@@ -3,7 +3,7 @@ package killdoctorlucky.model;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import controller.Icommand;
+import controller.commands.Icommand;
 import controller.commands.SaveMapCommand;
 import java.awt.image.BufferedImage;
 import java.io.File;

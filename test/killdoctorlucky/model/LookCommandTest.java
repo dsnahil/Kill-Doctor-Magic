@@ -2,7 +2,7 @@ package killdoctorlucky.model;
 
 import static org.junit.Assert.assertTrue;
 
-import controller.Icommand;
+import controller.commands.Icommand;
 import controller.commands.LookCommand;
 import java.util.Collections;
 import java.util.List;

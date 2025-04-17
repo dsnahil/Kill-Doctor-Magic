@@ -14,8 +14,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 /**
- * The World class represents the environment of the Kill Doctor Lucky game. It
- * contains the rooms, items, and game progression logic.
+ * Contains the entire implementation of the game.
  */
 public class World implements Iworld {
   protected int rows;
@@ -25,8 +24,8 @@ public class World implements Iworld {
   protected List<Iplayer> players;
   protected int targetLocationIndex;
   protected Ipet pet;
-  protected List<Ispace> petPath; // Changed to protected for testing extra credit
-  protected int petIndex; // Changed to protected for testing extra credit
+  protected List<Ispace> petPath; // DFS path for wandering pet
+  protected int petIndex;
 
   // Private fields
   private List<Iitem> items;
@@ -46,12 +45,6 @@ public class World implements Iworld {
     loadWorld(filePath);
   }
 
-  /**
-   * Loads the world details from the specified file.
-   *
-   * @param filePath the path to the world specification file.
-   * @throws IOException if reading fails or the format is invalid.
-   */
   private void loadWorld(String filePath) throws IOException {
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       // Parse world details.
@@ -59,7 +52,6 @@ public class World implements Iworld {
       if (line == null || line.trim().isEmpty()) {
         throw new IOException("World details line is missing or empty in " + filePath);
       }
-      // Split on whitespace.
       String[] worldDetails = line.trim().split("\\s+");
       if (worldDetails.length < 3) {
         throw new IOException(
@@ -104,7 +96,6 @@ public class World implements Iworld {
         if (line == null || line.trim().isEmpty()) {
           throw new IOException("Missing space details for space " + i);
         }
-        // Use a Scanner to parse the line.
         Scanner lineScanner = new Scanner(line);
         try {
           int x1 = lineScanner.nextInt();
@@ -166,7 +157,7 @@ public class World implements Iworld {
       }
       establishNeighbors();
 
-      // Compute the DFS path for the wandering pet (extra credit).
+      // Compute the DFS path for the wandering pet.
       petPath = computePetPath();
       petIndex = 0;
 
@@ -180,25 +171,48 @@ public class World implements Iworld {
     }
   }
 
-  @Override
-  public void setLastAttacker(String name) {
-    this.lastAttacker = name;
+  private void establishNeighbors() {
+    for (int i = 0; i < spaces.size(); i++) {
+      Space s1 = (Space) spaces.get(i);
+      for (int j = i + 1; j < spaces.size(); j++) {
+        Space s2 = (Space) spaces.get(j);
+        if (areAdjacent(s1, s2)) {
+          s1.addNeighbor(s2.getSpaceName());
+          s2.addNeighbor(s1.getSpaceName());
+        }
+      }
+    }
   }
 
-  @Override
-  public void addPlayer(String name, int startSpaceIndex) {
-    if (startSpaceIndex < 0 || startSpaceIndex >= spaces.size()) {
-      throw new IllegalArgumentException(
-          "Invalid space index " + startSpaceIndex + " for player start location.");
-    }
-    players.add(new Player(name, spaces.get(startSpaceIndex), this));
-    System.out.println(
-        "Player " + name + " added at space " + spaces.get(startSpaceIndex).getSpaceName());
+  private boolean areAdjacent(Space s1, Space s2) {
+    boolean horizontallyAdjacent = (Math.abs(s1.getLowerRow() - s2.getUpperRow()) <= 1
+        || Math.abs(s2.getLowerRow() - s1.getUpperRow()) <= 1)
+        && overlap(s1.getUpperColumn(), s1.getLowerColumn(), s2.getUpperColumn(),
+            s2.getLowerColumn());
+    boolean verticallyAdjacent = (Math.abs(s1.getLowerColumn() - s2.getUpperColumn()) <= 1
+        || Math.abs(s2.getLowerColumn() - s1.getUpperColumn()) <= 1)
+        && overlap(s1.getUpperRow(), s1.getLowerRow(), s2.getUpperRow(), s2.getLowerRow());
+    return horizontallyAdjacent || verticallyAdjacent;
+  }
+
+  private boolean overlap(int start1, int end1, int start2, int end2) {
+    return !(end1 < start2 || end2 < start1);
   }
 
   @Override
   public List<Iplayer> getPlayers() {
     return players;
+  }
+
+  @Override
+  public void addPlayer(String name, int spaceIndex) {
+    if (spaceIndex < 0 || spaceIndex >= spaces.size()) {
+      throw new IllegalArgumentException(
+          "Invalid space index " + spaceIndex + " for player start location.");
+    }
+    players.add(new Player(name, spaces.get(spaceIndex), this));
+    System.out
+        .println("Player " + name + " added at space " + spaces.get(spaceIndex).getSpaceName());
   }
 
   @Override
@@ -267,11 +281,7 @@ public class World implements Iworld {
   }
 
   /**
-   * Returns detailed information about a space based on its name. Now also
-   * includes a line if the pet is present in that space.
-   *
-   * @param spaceName the name of the space.
-   * @return a string containing detailed information about the space.
+   * Information about the space.
    */
   @Override
   public String getSpaceInfo(String spaceName) {
@@ -299,7 +309,6 @@ public class World implements Iworld {
     for (String neighborName : s.getNeighbors()) {
       Ispace neighbor = getSpaceByName(neighborName);
       if (neighbor != null) {
-        // If neighbor has the pet, mark it as not visible.
         if (((Space) neighbor).getHasPet()) {
           sb.append(neighbor.getSpaceName()).append(" (Not visible)\n");
         } else {
@@ -311,16 +320,25 @@ public class World implements Iworld {
     return sb.toString();
   }
 
+  /**
+   * Corrected getSpaceByName: now returns the actual instance so that updates
+   * (e.g., pet flags) are visible.
+   */
   @Override
   public Ispace getSpaceByName(String name) {
     for (Ispace space : spaces) {
       if (space.getSpaceName().equalsIgnoreCase(name)) {
-        // Return a defensive copy.
-        return new Space((Space) space);
+        return space;
       }
     }
     System.out.println("Warning: Space '" + name + "' not found.");
-    return spaces.isEmpty() ? null : new Space((Space) spaces.get(0));
+    return spaces.isEmpty() ? null : spaces.get(0);
+  }
+
+  @Override
+  public String viewTargetCharacter() {
+    return targetCharacter.getTargetName() + " (" + targetCharacter.getTargetHealth() + " HP) at "
+        + getTargetLocation().getSpaceName();
   }
 
   @Override
@@ -331,84 +349,6 @@ public class World implements Iworld {
   @Override
   public void moveTargetCharacter() {
     targetLocationIndex = (targetLocationIndex + 1) % spaces.size();
-  }
-
-  /**
-   * Establishes neighbors among spaces by checking adjacency.
-   */
-  private void establishNeighbors() {
-    for (int i = 0; i < spaces.size(); i++) {
-      Space s1 = (Space) spaces.get(i);
-      for (int j = i + 1; j < spaces.size(); j++) {
-        Space s2 = (Space) spaces.get(j);
-        if (areAdjacent(s1, s2)) {
-          s1.addNeighbor(s2.getSpaceName());
-          s2.addNeighbor(s1.getSpaceName());
-        }
-      }
-    }
-  }
-
-  /**
-   * Determines if two spaces are adjacent based on row/column overlap.
-   *
-   * @param s1 the first space.
-   * @param s2 the second space.
-   * @return true if adjacent, false otherwise.
-   */
-  private boolean areAdjacent(Space s1, Space s2) {
-    boolean horizontallyAdjacent = (Math.abs(s1.getLowerRow() - s2.getUpperRow()) <= 1
-        || Math.abs(s2.getLowerRow() - s1.getUpperRow()) <= 1)
-        && overlap(s1.getUpperColumn(), s1.getLowerColumn(), s2.getUpperColumn(),
-            s2.getLowerColumn());
-    boolean verticallyAdjacent = (Math.abs(s1.getLowerColumn() - s2.getUpperColumn()) <= 1
-        || Math.abs(s2.getLowerColumn() - s1.getUpperColumn()) <= 1)
-        && overlap(s1.getUpperRow(), s1.getLowerRow(), s2.getUpperRow(), s2.getLowerRow());
-    return horizontallyAdjacent || verticallyAdjacent;
-  }
-
-  /**
-   * Checks if two intervals [start1, end1] and [start2, end2] overlap.
-   *
-   * @param start1 the start of the first interval.
-   * @param end1   the end of the first interval.
-   * @param start2 the start of the second interval.
-   * @param end2   the end of the second interval.
-   * @return true if the intervals overlap, false otherwise.
-   */
-  private boolean overlap(int start1, int end1, int start2, int end2) {
-    return !(end1 < start2 || end2 < start1);
-  }
-
-  @Override
-  public String getWinner() {
-    return (winnerName != null) ? winnerName : "No one";
-  }
-
-  @Override
-  public void setWinner(String name) {
-    this.winnerName = (name != null) ? name : lastAttacker;
-  }
-
-  @Override
-  public String viewTargetCharacter() {
-    return targetCharacter.getTargetName() + " (" + targetCharacter.getTargetHealth() + " HP) at "
-        + getTargetLocation().getSpaceName();
-  }
-
-  @Override
-  public Ipet getPet() {
-    return pet;
-  }
-
-  @Override
-  public boolean canPlayerSee(Iplayer a, Iplayer b) {
-    Ispace first = a.getPlayerLocation();
-    Ispace second = b.getPlayerLocation();
-    if (first.getSpaceName().equalsIgnoreCase(second.getSpaceName())) {
-      return true;
-    }
-    return first.getNeighbors().contains(second.getSpaceName());
   }
 
   /**
@@ -466,5 +406,35 @@ public class World implements Iworld {
     if (nextSpace instanceof Space) {
       ((Space) nextSpace).setHasPet(true);
     }
+  }
+
+  @Override
+  public void setLastAttacker(String name) {
+    this.lastAttacker = name;
+  }
+
+  @Override
+  public String getWinner() {
+    return (winnerName != null) ? winnerName : "No one";
+  }
+
+  @Override
+  public void setWinner(String name) {
+    this.winnerName = (name != null) ? name : lastAttacker;
+  }
+
+  @Override
+  public Ipet getPet() {
+    return pet;
+  }
+
+  @Override
+  public boolean canPlayerSee(Iplayer a, Iplayer b) {
+    Ispace first = a.getPlayerLocation();
+    Ispace second = b.getPlayerLocation();
+    if (first.getSpaceName().equalsIgnoreCase(second.getSpaceName())) {
+      return true;
+    }
+    return first.getNeighbors().contains(second.getSpaceName());
   }
 }

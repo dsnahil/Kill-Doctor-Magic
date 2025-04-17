@@ -1,6 +1,5 @@
 package controller.commands;
 
-import controller.Icommand;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

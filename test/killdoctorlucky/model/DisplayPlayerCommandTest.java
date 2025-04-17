@@ -3,8 +3,9 @@ package killdoctorlucky.model;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import controller.Icommand;
 import controller.commands.DisplayPlayerCommand;
+import controller.commands.Icommand;
+
 import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
