@@ -1,7 +1,11 @@
 package killdoctorlucky.model;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -218,19 +222,53 @@ public class World implements Iworld {
   @Override
   public BufferedImage generateWorldMap() {
     int scale = 10;
-    BufferedImage image = new BufferedImage(cols * scale, rows * scale, BufferedImage.TYPE_INT_RGB);
-    Graphics g = image.getGraphics();
-    g.setColor(Color.WHITE);
-    g.fillRect(0, 0, image.getWidth(), image.getHeight());
-    g.setColor(Color.BLACK);
-    for (Ispace space : spaces) {
-      int x = space.getUpperColumn() * scale;
-      int y = space.getUpperRow() * scale;
-      int width = (space.getLowerColumn() - space.getUpperColumn()) * scale;
-      int height = (space.getLowerRow() - space.getUpperRow()) * scale;
-      g.drawRect(x, y, width, height);
-      g.drawString(space.getSpaceName(), x + 2, y + 12);
+    int imgW = cols * scale;
+    int imgH = rows * scale;
+    BufferedImage image = new BufferedImage(imgW, imgH, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = image.createGraphics();
+    // smooth edges
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+    // light background
+    g2.setColor(new Color(240, 240, 240));
+    g2.fillRect(0, 0, imgW, imgH);
+
+    // room‑name font
+    Font roomFont = new Font("SansSerif", Font.BOLD, 10);
+    g2.setFont(roomFont);
+    FontMetrics fm = g2.getFontMetrics();
+
+    for (Ispace sp : spaces) {
+      int x = sp.getUpperColumn() * scale;
+      int y = sp.getUpperRow() * scale;
+      int w = (sp.getLowerColumn() - sp.getUpperColumn()) * scale;
+      int h = (sp.getLowerRow() - sp.getUpperRow()) * scale;
+
+      // fill room
+      g2.setColor(new Color(200, 200, 200));
+      g2.fillRect(x, y, w, h);
+
+      // border
+      g2.setColor(Color.DARK_GRAY);
+      g2.drawRect(x, y, w, h);
+
+      // centered name
+      String name = sp.getSpaceName();
+      int textW = fm.stringWidth(name);
+      int tx = x + Math.max(2, (w - textW) / 2);
+      int ty = y + fm.getAscent() + 2;
+      g2.setColor(Color.BLACK);
+      g2.drawString(name, tx, ty);
+
+      // pet indicator
+      if (sp.getHasPet()) {
+        int cx = x + w / 2, cy = y + h / 2;
+        g2.setColor(Color.ORANGE);
+        g2.fillOval(cx - 4, cy - 4, 8, 8);
+      }
     }
+
+    g2.dispose();
     return image;
   }
 
