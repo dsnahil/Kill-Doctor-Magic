@@ -15,66 +15,77 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Swing GUI for Kill Doctor Lucky. • Background image • Scrollable, resizable
- * map • Button + key controls • Click on player icon to describe
+ * The main GUI for the Kill Doctor Lucky game. Draws a full-window spooky
+ * background image, then layers the map, controls, and log transparently on
+ * top.
  */
 public class GameView extends JFrame implements IView {
+
+  // — UI components —
   private final MapPanel mapPanel = new MapPanel();
   private final JScrollPane mapScroll = new JScrollPane(mapPanel);
-  private final JTextArea logArea = new JTextArea(6, 40);
-  private final JLabel statusLabel = new JLabel();
+  private final JTextArea logArea = new JTextArea(5, 40);
+  private final JLabel statusLabel = new JLabel("Welcome!");
+  private final JPanel eastButtonsPanel = new JPanel(new GridLayout(0, 1, 5, 5));
+
+  // Controller callback interface
   private IViewFeatures features;
 
-  private List<Iplayer> players = Collections.emptyList();
-  private Ispace target;
+  // Background image
+  private final BufferedImage background;
 
+  /**
+   * Constructs the main game window.
+   * 
+   * @throws IOException if the background image can’t be loaded
+   */
   public GameView() throws IOException {
     super("Kill Doctor Lucky");
 
-    // set a spooky background
-    try {
-      Image bg = ImageIO.read(new File("res/spooky_bg.jpeg"));
-      setContentPane(new BackgroundPanel(bg));
-    } catch (IOException e) {
-      getContentPane().setLayout(new BorderLayout());
-    }
+    // 1) Load your spooky background
+    background = ImageIO.read(new File("res/spooky_bg.jpeg"));
 
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
-    setMinimumSize(new Dimension(300, 300));
+    // 2) Build a single content‐pane that paints that background
+    JPanel content = new JPanel() {
+      @Override
+      protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        // Stretch the background to fill the window
+        g.drawImage(background, 0, 0, getWidth(), getHeight(), null);
+      }
+    };
+    content.setLayout(new BorderLayout(5, 5));
+    setContentPane(content);
 
+    // 3) Build the rest of your UI _into_ that content panel
     createMenuBar();
-    initUI();
-    // initKeyBindings moved to setViewFeatures
+    initUI(content);
+    initKeyBindings();
+
+    setMinimumSize(new Dimension(800, 600));
     pack();
     setLocationRelativeTo(null);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
   }
 
   private void createMenuBar() {
     JMenuBar mb = new JMenuBar();
+
     JMenu file = new JMenu("File");
-    JMenuItem mNewW = new JMenuItem("New World…");
-    JMenuItem mNew = new JMenuItem("Restart Game");
+    JMenuItem mNewW = new JMenuItem("New… (new world)");
+    JMenuItem mNew = new JMenuItem("New… (same world)");
     JMenuItem mQuit = new JMenuItem("Quit");
-    mNewW.addActionListener(e -> {
-      if (features != null)
-        features.handleNewWorld();
-    });
-    mNew.addActionListener(e -> {
-      if (features != null)
-        features.handleNewGame();
-    });
-    mQuit.addActionListener(e -> {
-      if (features != null)
-        features.handleQuit();
-    });
+    mNewW.addActionListener(e -> features.handleNewWorld());
+    mNew.addActionListener(e -> features.handleNewGame());
+    mQuit.addActionListener(e -> features.handleQuit());
     file.add(mNewW);
     file.add(mNew);
     file.addSeparator();
     file.add(mQuit);
 
     JMenu help = new JMenu("Help");
-    JMenuItem about = new JMenuItem("Instructions");
-    about.addActionListener(e -> showInstructions());
+    JMenuItem about = new JMenuItem("About");
+    about.addActionListener(e -> new AboutDialog(this).setVisible(true));
     help.add(about);
 
     mb.add(file);
@@ -82,37 +93,67 @@ public class GameView extends JFrame implements IView {
     setJMenuBar(mb);
   }
 
-  private void initUI() {
-    Container c = getContentPane();
-    c.setLayout(new BorderLayout(5, 5));
-
+  private void initUI(JPanel content) {
+    // — Status bar at top —
     statusLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-    c.add(statusLabel, BorderLayout.NORTH);
+    content.add(statusLabel, BorderLayout.NORTH);
 
+    // — World map in center, with transparent background —
     mapScroll.setBorder(new TitledBorder("World Map"));
-    c.add(mapScroll, BorderLayout.CENTER);
+    mapScroll.setOpaque(false);
+    mapScroll.getViewport().setOpaque(false);
+    content.add(mapScroll, BorderLayout.CENTER);
 
-    JPanel east = new JPanel(new GridLayout(0, 1, 5, 5));
+    // — Buttons on right —
     for (String name : new String[] { "Next Turn", "Move", "Pickup", "Look", "Attack", "Describe",
         "Save Map", "Move Pet" }) {
       JButton b = new JButton(name);
-      b.setToolTipText(name + " (" + name.charAt(0) + ")");
-      b.addActionListener(e -> handleButton(name));
-      east.add(b);
+      b.addActionListener(e -> {
+        switch (name) {
+          case "Next Turn":
+            features.handleNextTurn();
+            break;
+          case "Move":
+            features.handleMove();
+            break;
+          case "Pickup":
+            features.handlePickup();
+            break;
+          case "Look":
+            features.handleLook();
+            break;
+          case "Attack":
+            features.handleAttack();
+            break;
+          case "Describe":
+            features.handleDescribe();
+            break;
+          case "Save Map":
+            features.handleSaveMap();
+            break;
+          case "Move Pet":
+            features.handleMovePet();
+            break;
+        }
+      });
+      eastButtonsPanel.add(b);
     }
-    c.add(east, BorderLayout.EAST);
+    eastButtonsPanel.setOpaque(false);
+    content.add(eastButtonsPanel, BorderLayout.EAST);
 
+    // — Log area at bottom —
     logArea.setEditable(false);
     JScrollPane logScroll = new JScrollPane(logArea);
     logScroll.setBorder(new TitledBorder("Game Log"));
-    c.add(logScroll, BorderLayout.SOUTH);
+    logScroll.setOpaque(false);
+    logScroll.getViewport().setOpaque(false);
+    content.add(logScroll, BorderLayout.SOUTH);
 
+    // — Map‐click handler —
     mapPanel.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
-        if (features != null) {
-          features.handleMapClick(e.getX(), e.getY());
-        }
+        features.handleMapClick(e.getX(), e.getY());
       }
     });
   }
@@ -121,67 +162,36 @@ public class GameView extends JFrame implements IView {
     InputMap im = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
     ActionMap am = getRootPane().getActionMap();
 
-    bind(im, am, 'N', () -> features.handleNextTurn());
-    bind(im, am, 'M', () -> features.handleMove());
-    bind(im, am, 'P', () -> features.handlePickup());
-    bind(im, am, 'L', () -> features.handleLook());
-    bind(im, am, 'A', () -> features.handleAttack());
-    bind(im, am, 'D', () -> features.handleDescribe());
-  }
-
-  private void bind(InputMap im, ActionMap am, char key, Runnable action) {
-    String name = "key" + key;
-    im.put(KeyStroke.getKeyStroke(key), name);
-    am.put(name, new AbstractAction() {
+    im.put(KeyStroke.getKeyStroke('M'), "move");
+    am.put("move", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        if (features != null) {
-          action.run();
-        }
+        features.handleMove();
+      }
+    });
+
+    im.put(KeyStroke.getKeyStroke('P'), "pickup");
+    am.put("pickup", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        features.handlePickup();
+      }
+    });
+
+    im.put(KeyStroke.getKeyStroke('L'), "look");
+    am.put("look", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        features.handleLook();
+      }
+    });
+
+    im.put(KeyStroke.getKeyStroke('A'), "attack");
+    am.put("attack", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        features.handleAttack();
       }
     });
   }
 
-  private void handleButton(String name) {
-    if (features == null)
-      return;
-    switch (name) {
-      case "Next Turn":
-        features.handleNextTurn();
-        break;
-      case "Move":
-        features.handleMove();
-        break;
-      case "Pickup":
-        features.handlePickup();
-        break;
-      case "Look":
-        features.handleLook();
-        break;
-      case "Attack":
-        features.handleAttack();
-        break;
-      case "Describe":
-        features.handleDescribe();
-        break;
-      case "Save Map":
-        features.handleSaveMap();
-        break;
-      case "Move Pet":
-        features.handleMovePet();
-        break;
-    }
-  }
-
-  private void showInstructions() {
-    String msg = "<html><h2>Kill Doctor Lucky</h2>" + "<ul>"
-        + "<li>Keys: N=Next, M=Move, P=Pickup, L=Look, A=Attack, D=Describe</li>"
-        + "<li>Click on map to move (you’ll be prompted)</li>"
-        + "<li>Click your icon to see your stats</li>" + "</ul></html>";
-    JOptionPane.showMessageDialog(this, msg, "Instructions", JOptionPane.INFORMATION_MESSAGE);
-  }
-
-  // IView
-
+  // — IView API —
   @Override
   public void redrawMap(BufferedImage map) {
     mapPanel.setImage(map);
@@ -197,25 +207,18 @@ public class GameView extends JFrame implements IView {
   @Override
   public void setViewFeatures(IViewFeatures f) {
     this.features = f;
-    initKeyBindings();
   }
 
-  /**
-   * Controller now passes a **rotated** list so players.get(0) is always the
-   * current player.
-   */
+  // — Entity update before repainting —
   public void setEntities(List<Iplayer> players, Ispace target) {
-    this.players = players;
-    this.target = target;
-
-    String current = players.isEmpty() ? "—" : players.get(0).getPlayerName();
-    statusLabel.setText("Players: " + players.size() + "   Current: " + current + "   Target: "
-        + (target != null ? target.getSpaceName() : "—"));
+    mapPanel.setEntities(players, target);
   }
 
-  // — draws the map + icons —
+  // — Inner class: draws the map + icons —
   private class MapPanel extends JPanel {
     private BufferedImage img;
+    private List<Iplayer> players = Collections.emptyList();
+    private Ispace target;
     private final int scale = 10;
 
     void setImage(BufferedImage map) {
@@ -226,52 +229,33 @@ public class GameView extends JFrame implements IView {
       }
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-      super.paintComponent(g);
-      if (img == null)
-        return;
-
-      Graphics2D g2 = (Graphics2D) g;
-      // smooth everything
-      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-      // draw the styled base map
-      g2.drawImage(img, 0, 0, null);
-
-      // draw Doctor Lucky (red square)
-      if (target != null) {
-        int cx = ((target.getUpperColumn() + target.getLowerColumn()) / 2) * scale;
-        int cy = ((target.getUpperRow() + target.getLowerRow()) / 2) * scale;
-        g2.setColor(Color.RED);
-        g2.fillRect(cx - 6, cy - 6, 12, 12);
-      }
-
-      // draw players (green for current, blue for others)
-      for (int i = 0; i < players.size(); i++) {
-        Iplayer p = players.get(i);
-        Ispace s = p.getPlayerLocation();
-        int cx = ((s.getUpperColumn() + s.getLowerColumn()) / 2) * scale;
-        int cy = ((s.getUpperRow() + s.getLowerRow()) / 2) * scale;
-        g2.setColor(i == 0 ? Color.GREEN : Color.BLUE);
-        g2.fillOval(cx - 6, cy - 6, 12, 12);
-      }
-    }
-  }
-
-  // paints a full‑window background
-  private static class BackgroundPanel extends JPanel {
-    private final Image bg;
-
-    BackgroundPanel(Image bg) {
-      this.bg = bg;
-      setLayout(new BorderLayout());
+    void setEntities(List<Iplayer> players, Ispace target) {
+      this.players = players;
+      this.target = target;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
       super.paintComponent(g);
-      g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
+      if (img != null) {
+        g.drawImage(img, 0, 0, null);
+        Graphics2D g2 = (Graphics2D) g;
+        // draw Doctor Lucky (red square)
+        if (target != null) {
+          int cx = ((target.getUpperColumn() + target.getLowerColumn()) / 2) * scale;
+          int cy = ((target.getUpperRow() + target.getLowerRow()) / 2) * scale;
+          g2.setColor(Color.RED);
+          g2.fillRect(cx - 6, cy - 6, 12, 12);
+        }
+        // draw players (blue circles)
+        g2.setColor(Color.BLUE);
+        for (Iplayer p : players) {
+          Ispace s = p.getPlayerLocation();
+          int cx = ((s.getUpperColumn() + s.getLowerColumn()) / 2) * scale;
+          int cy = ((s.getUpperRow() + s.getLowerRow()) / 2) * scale;
+          g2.fillOval(cx - 5, cy - 5, 10, 10);
+        }
+      }
     }
   }
 }

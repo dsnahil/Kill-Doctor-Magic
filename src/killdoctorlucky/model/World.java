@@ -219,53 +219,48 @@ public class World implements Iworld {
         .println("Player " + name + " added at space " + spaces.get(spaceIndex).getSpaceName());
   }
 
+  /**
+   * Generates a visual representation of the game world as a BufferedImage. Each
+   * room is drawn as a light‐gray filled rectangle with a black border and its
+   * name centered inside. A 50px right margin ensures no labels ever get clipped.
+   */
   @Override
   public BufferedImage generateWorldMap() {
-    int scale = 10;
-    int imgW = cols * scale;
-    int imgH = rows * scale;
-    BufferedImage image = new BufferedImage(imgW, imgH, BufferedImage.TYPE_INT_ARGB);
-    Graphics2D g2 = image.createGraphics();
-    // smooth edges
-    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    final int scale = 10;
+    final int margin = 50; // extra room on the right for long labels
+    final int imgW = cols * scale + margin;
+    final int imgH = rows * scale;
 
-    // light background
-    g2.setColor(new Color(240, 240, 240));
+    BufferedImage image = new BufferedImage(imgW, imgH, BufferedImage.TYPE_INT_RGB);
+    Graphics2D g2 = image.createGraphics();
+
+    // 1) White background
+    g2.setColor(Color.WHITE);
     g2.fillRect(0, 0, imgW, imgH);
 
-    // room‑name font
-    Font roomFont = new Font("SansSerif", Font.BOLD, 10);
-    g2.setFont(roomFont);
-    FontMetrics fm = g2.getFontMetrics();
+    // 2) Draw each room
+    for (Ispace space : spaces) {
+      int x = space.getUpperColumn() * scale;
+      int y = space.getUpperRow() * scale;
+      int w = (space.getLowerColumn() - space.getUpperColumn()) * scale;
+      int h = (space.getLowerRow() - space.getUpperRow()) * scale;
 
-    for (Ispace sp : spaces) {
-      int x = sp.getUpperColumn() * scale;
-      int y = sp.getUpperRow() * scale;
-      int w = (sp.getLowerColumn() - sp.getUpperColumn()) * scale;
-      int h = (sp.getLowerRow() - sp.getUpperRow()) * scale;
-
-      // fill room
-      g2.setColor(new Color(200, 200, 200));
+      // a) fill interior
+      g2.setColor(new Color(230, 230, 230));
       g2.fillRect(x, y, w, h);
 
-      // border
-      g2.setColor(Color.DARK_GRAY);
+      // b) outline
+      g2.setColor(Color.BLACK);
       g2.drawRect(x, y, w, h);
 
-      // centered name
-      String name = sp.getSpaceName();
+      // c) room name, centered
+      FontMetrics fm = g2.getFontMetrics();
+      String name = space.getSpaceName();
       int textW = fm.stringWidth(name);
-      int tx = x + Math.max(2, (w - textW) / 2);
-      int ty = y + fm.getAscent() + 2;
-      g2.setColor(Color.BLACK);
+      int textH = fm.getHeight();
+      int tx = x + (w - textW) / 2;
+      int ty = y + (h - textH) / 2 + fm.getAscent();
       g2.drawString(name, tx, ty);
-
-      // pet indicator
-      if (sp.getHasPet()) {
-        int cx = x + w / 2, cy = y + h / 2;
-        g2.setColor(Color.ORANGE);
-        g2.fillOval(cx - 4, cy - 4, 8, 8);
-      }
     }
 
     g2.dispose();
