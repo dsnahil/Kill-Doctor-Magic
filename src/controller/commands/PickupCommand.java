@@ -11,9 +11,10 @@ public class PickupCommand implements Icommand {
   private final String itemName;
 
   /**
-   * Command to pick up an item in the current space. This command is used to
-   * request that a player picks up a specific item from the space in which they
-   * are currently located.
+   * Command to pick up an item in the current space.
+   *
+   * @param playerName the name of the player issuing the pickup
+   * @param itemName   the name of the item to pick up
    */
   public PickupCommand(String playerName, String itemName) {
     this.playerName = playerName;
@@ -28,5 +29,10 @@ public class PickupCommand implements Icommand {
     }
     Iplayer player = model.getPlayers().get(pindex);
     player.pickUpItem(itemName);
+  }
+
+  /** Exposed for GUI logging. */
+  public String getItemName() {
+    return itemName;
   }
 }

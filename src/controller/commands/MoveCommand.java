@@ -32,4 +32,9 @@ public class MoveCommand implements Icommand {
     Ispace newSpace = model.getSpaceByName(targetSpaceName);
     player.moveTo(newSpace); // Will throw if invalid neighbor
   }
+
+  /** Exposed for GUI logging. */
+  public String getTargetSpaceName() {
+    return targetSpaceName;
+  }
 }

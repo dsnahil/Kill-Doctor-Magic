@@ -34,4 +34,9 @@ public class AttackCommand implements Icommand {
     player.attackDoctorLucky(weaponName);
     logger.info(playerName + " executed attack with " + weaponName);
   }
+
+  /** Exposed for GUI logging. */
+  public String getWeaponName() {
+    return weaponName;
+  }
 }

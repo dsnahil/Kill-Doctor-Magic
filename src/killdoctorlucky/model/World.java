@@ -458,6 +458,13 @@ public class World implements Iworld {
     return pet;
   }
 
+  /**
+   * Exposed so GUI can iterate all spaces to hit‑test clicks.
+   */
+  public List<Ispace> getSpaces() {
+    return spaces;
+  }
+
   @Override
   public boolean canPlayerSee(Iplayer a, Iplayer b) {
     Ispace first = a.getPlayerLocation();
