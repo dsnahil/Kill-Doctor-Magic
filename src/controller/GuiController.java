@@ -1,9 +1,8 @@
-// File: src/controller/GuiController.java
 package controller;
 
 import controller.commands.AttackCommand;
+import controller.commands.DisplayPlayerCommand;
 import controller.commands.MoveCommand;
-import controller.commands.MovePetCommand;
 import controller.commands.PickupCommand;
 import controller.commands.SaveMapCommand;
 import java.awt.image.BufferedImage;
@@ -15,13 +14,13 @@ import killdoctorlucky.model.Ispace;
 import killdoctorlucky.model.Iworld;
 import killdoctorlucky.model.World;
 import view.GameView;
-import view.IViewFeatures;
+import view.IviewFeatures;
 
 /**
- * GUI controller. After each human action that consumes a turn, automatically
- * moves Doctor Lucky + pet, increments turn count, and updates the header/log.
+ * Coordinates between the Swing GUI and the game model, handling all user
+ * actions.
  */
-public class GuiController implements Icontroller, IViewFeatures {
+public class GuiController implements Icontroller, IviewFeatures {
 
   private final Iworld model;
   private final GameView view;
@@ -29,6 +28,8 @@ public class GuiController implements Icontroller, IViewFeatures {
   private int turnCount = 0;
 
   /**
+   * Constructs the GUI controller.
+   *
    * @param model    the world model
    * @param view     the Swing UI
    * @param maxTurns max turns before draw
@@ -43,6 +44,11 @@ public class GuiController implements Icontroller, IViewFeatures {
     this.maxTurns = maxTurns;
 
     view.setViewFeatures(this);
+    view.appendToLog("Welcome to Kill Doctor Lucky!\n"
+        + "• Move by clicking the Move button, then type or click a room.\n"
+        + "• Pickup items via Pickup button.\n"
+        + "• Attack only when in same room and unseen; pet blocks attacks.\n"
+        + "• Pet wanders automatically each turn.\n");
     redrawAll();
   }
 
@@ -50,22 +56,26 @@ public class GuiController implements Icontroller, IViewFeatures {
     BufferedImage map = model.generateWorldMap();
     List<Iplayer> players = model.getPlayers();
     Ispace target = model.getTargetLocation();
+
     view.redrawMap(map);
     view.setEntities(players, target);
-
-    String status = String.format("Turn: %d    %s", turnCount, model.viewTargetCharacter());
-    view.appendToLog("Turn " + turnCount + ": " + model.viewTargetCharacter());
+    view.setStatusText(String.format("%s’s Turn — Turn %d — %s",
+        players.get(turnCount % players.size()).getPlayerName(), turnCount,
+        model.viewTargetCharacter()));
   }
 
   @Override
-  public void startGame() {
-    /* unused */ }
+  public void startGame() throws IOException {
+    // Not used in GUI mode
+  }
 
   @Override
   public void handleNewGame() {
-    turnCount = 0;
-    view.appendToLog("Game restarted on same world.");
-    redrawAll();
+    try {
+      new GuiController(model, view, maxTurns);
+    } catch (IOException ex) {
+      view.appendToLog("Restart failed: " + ex.getMessage());
+    }
   }
 
   @Override
@@ -103,30 +113,57 @@ public class GuiController implements Icontroller, IViewFeatures {
 
   @Override
   public void handleMove() {
-    String dest = JOptionPane.showInputDialog("Enter destination space:");
-    if (dest != null)
+    String dest = JOptionPane.showInputDialog(view, "Enter destination space:");
+    if (dest != null) {
       exec(new MoveCommand(getPlayer(), dest), true);
+    }
   }
 
   @Override
   public void handlePickup() {
-    String item = JOptionPane.showInputDialog("Enter item to pick up:");
-    if (item != null)
+    String item = JOptionPane.showInputDialog(view, "Enter item to pick up:");
+    if (item != null) {
       exec(new PickupCommand(getPlayer(), item), true);
+    }
+  }
+
+  @Override
+  public void handleLook() {
+    String where = JOptionPane.showInputDialog(view, "Look at which space?");
+    if (where != null) {
+      view.appendToLog(model.getSpaceInfo(where));
+    }
   }
 
   @Override
   public void handleAttack() {
-    String w = JOptionPane.showInputDialog("Enter weapon to attack with:");
-    if (w != null)
+    String w = JOptionPane.showInputDialog(view, "Enter weapon to attack with:");
+    if (w != null) {
       exec(new AttackCommand(getPlayer(), w), true);
+    }
+  }
+
+  @Override
+  public void handleDescribe() {
+    exec(new DisplayPlayerCommand(getPlayer()), false);
+  }
+
+  @Override
+  public void handleSaveMap() {
+    String fn = JOptionPane.showInputDialog(view, "Filename to save map (e.g. map.png):");
+    if (fn != null) {
+      exec(new SaveMapCommand(fn), false);
+    }
   }
 
   @Override
   public void handleMovePet() {
-    String s = JOptionPane.showInputDialog("Enter space to move pet to:");
-    if (s != null)
-      exec(new MovePetCommand(s), true);
+    // No-op: pet moves automatically
+  }
+
+  @Override
+  public void handleInventoryClick(String itemName) {
+    exec(new AttackCommand(getPlayer(), itemName), true);
   }
 
   @Override
@@ -135,33 +172,8 @@ public class GuiController implements Icontroller, IViewFeatures {
   }
 
   @Override
-  public void handleLook() {
-    String where = JOptionPane.showInputDialog("Look at which space?");
-    if (where != null)
-      view.appendToLog(model.getSpaceInfo(where));
-  }
-
-  @Override
-  public void handleDescribe() {
-    String me = getPlayer();
-    int idx = model.findPlayerIndex(me);
-    Iplayer p = model.getPlayers().get(idx);
-    view.appendToLog(String.format("%s @ %s    Items: %s", me, p.getPlayerLocation().getSpaceName(),
-        p.getPlayerItems()));
-  }
-
-  @Override
-  public void handleSaveMap() {
-    String fn = JOptionPane.showInputDialog("Filename to save map (e.g. map.png):");
-    if (fn != null)
-      exec(new SaveMapCommand(fn), false);
-  }
-
-  @Override
   public void handleMapClick(int x, int y) {
-    String dest = JOptionPane.showInputDialog(String.format("Clicked at (%d,%d). Enter space to move to:", x, y));
-    if (dest != null)
-      exec(new MoveCommand(getPlayer(), dest), true);
+    // Unused
   }
 
   private void exec(controller.commands.Icommand cmd, boolean consumesTurn) {
@@ -170,13 +182,14 @@ public class GuiController implements Icontroller, IViewFeatures {
     } catch (Exception ex) {
       view.appendToLog("Error: " + ex.getMessage());
     }
-    if (consumesTurn)
+    if (consumesTurn) {
       handleNextTurn();
-    else
+    } else {
       redrawAll();
+    }
   }
 
   private String getPlayer() {
-    return model.getPlayers().get(0).getPlayerName();
+    return model.getPlayers().get(turnCount % model.getPlayers().size()).getPlayerName();
   }
 }

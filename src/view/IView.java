@@ -1,15 +1,31 @@
-// File: src/view/IView.java
 package view;
 
 import java.awt.image.BufferedImage;
 
-public interface IView {
-  /** draw the world map image **/
+/**
+ * Draws the world map image, appends to the game log, and registers controller
+ * callbacks.
+ */
+public interface Iview {
+
+  /**
+   * Draws the world map image.
+   *
+   * @param map the BufferedImage of the world map.
+   */
   void redrawMap(BufferedImage map);
 
-  /** append a line to the game log **/
+  /**
+   * Appends a line to the game log.
+   *
+   * @param text the text to append.
+   */
   void appendToLog(String text);
 
-  /** register controller callbacks **/
-  void setViewFeatures(IViewFeatures f);
+  /**
+   * Registers controller callbacks.
+   *
+   * @param features the IViewFeatures implementation.
+   */
+  void setViewFeatures(IviewFeatures features);
 }

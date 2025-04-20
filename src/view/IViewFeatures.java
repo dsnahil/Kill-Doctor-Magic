@@ -3,30 +3,46 @@ package view;
 /**
  * Controller callbacks from the GUI.
  */
-public interface IViewFeatures {
+public interface IviewFeatures {
+  /** Handle loading a new world file. */
   void handleNewWorld();
 
+  /** Handle starting a new game. */
   void handleNewGame();
 
+  /** Handle quitting the application. */
   void handleQuit();
 
+  /** Handle advancing to the next turn. */
   void handleNextTurn();
 
-  void handleMove(); // via Move button or key 'M'
+  /** Handle a move action (via Move button or key 'M'). */
+  void handleMove();
 
-  void handleMoveTo(String spaceName); // via map‑click
+  /** Handle moving to a specific space (via map click). */
+  void handleMoveTo(String spaceName);
 
-  void handlePickup(); // via button or key 'P'
+  /** Handle picking up an item (via button or key 'P'). */
+  void handlePickup();
 
-  void handleLook(); // via button or key 'L'
+  /** Handle looking at a space (via button or key 'L'). */
+  void handleLook();
 
-  void handleAttack(); // via button or key 'A'
+  /** Handle an attack action (via button or key 'A'). */
+  void handleAttack();
 
+  /** Handle describing the current player. */
   void handleDescribe();
 
+  /** Handle saving the current map to a file. */
   void handleSaveMap();
 
+  /** Double‑click an inventory item to attack with it. */
+  void handleInventoryClick(String itemName);
+
+  /** Handle moving the pet character. */
   void handleMovePet();
 
+  /** Handle clicking on the map at the given coordinates. */
   void handleMapClick(int x, int y);
 }

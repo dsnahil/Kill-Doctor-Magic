@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import controller.commands.AttackCommand;
 import controller.commands.Icommand;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
