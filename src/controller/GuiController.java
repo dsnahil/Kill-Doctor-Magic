@@ -1,4 +1,3 @@
-// File: src/controller/GuiController.java
 package controller;
 
 import controller.commands.AttackCommand;
@@ -118,7 +117,6 @@ public class GuiController implements Icontroller, IviewFeatures {
 
   @Override
   public void handlePickup() {
-    // Prompt for which item to pick up
     Iplayer me = model.getPlayers().get(turnCount % model.getPlayers().size());
     List<String> items = me.getPlayerLocation().getItems();
     if (items.isEmpty()) {
@@ -134,13 +132,23 @@ public class GuiController implements Icontroller, IviewFeatures {
 
   @Override
   public void handleLook() {
-    // Now consumes a turn
     exec(new LookCommand(getPlayer()), true);
   }
 
   @Override
   public void handleAttack() {
-    exec(new AttackCommand(getPlayer(), null), true);
+    Iplayer me = model.getPlayers().get(turnCount % model.getPlayers().size());
+    List<String> weapons = me.getPlayerItems();
+    if (weapons.isEmpty()) {
+      JOptionPane.showMessageDialog(view, "No weapons in inventory to attack with.");
+      return;
+    }
+    String weapon = weapons.size() == 1 ? weapons.get(0)
+        : (String) JOptionPane.showInputDialog(view, "Choose a weapon to attack with:", "Attack",
+            JOptionPane.PLAIN_MESSAGE, null, weapons.toArray(new String[0]), weapons.get(0));
+    if (weapon != null) {
+      exec(new AttackCommand(getPlayer(), weapon), true);
+    }
   }
 
   @Override
@@ -150,12 +158,21 @@ public class GuiController implements Icontroller, IviewFeatures {
 
   @Override
   public void handleSaveMap() {
-    exec(new SaveMapCommand(null), false);
+    // Prompt for a filename so we never pass null to SaveMapCommand
+    String fileName = JOptionPane.showInputDialog(view, "Enter filename (e.g. worldmap.png):",
+        "Save Map", JOptionPane.QUESTION_MESSAGE);
+    if (fileName == null || fileName.trim().isEmpty()) {
+      // user cancelled or entered nothing
+      return;
+    }
+    // Save the map and consume a turn
+    exec(new SaveMapCommand(fileName.trim()), /* consumesTurn= */ true);
   }
 
   @Override
   public void handleMovePet() {
-    /* pet moves in processTurns */ }
+    // pet moves in processTurns
+  }
 
   @Override
   public void handleInventoryClick(String itemName) {
@@ -202,7 +219,6 @@ public class GuiController implements Icontroller, IviewFeatures {
   private void exec(controller.commands.Icommand cmd, boolean consumesTurn) {
     try {
       cmd.execute(model);
-      // Log human action
       if (cmd instanceof MoveCommand) {
         view.appendToLog(getPlayer() + " moved to " + ((MoveCommand) cmd).getTargetSpaceName());
       } else if (cmd instanceof PickupCommand) {

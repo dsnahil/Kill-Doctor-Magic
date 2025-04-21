@@ -1,4 +1,3 @@
-// File: src/controller/Driver.java
 package controller;
 
 import java.io.IOException;

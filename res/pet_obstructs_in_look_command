@@ -1,0 +1,32 @@
+Players Present: []
+Coordinates: [22, 19] to [23, 26]
+--- Visible Neighboring Spaces ---
+Billiard Room (Items: [])
+Dining Hall (Items: [])
+Drawing Room (Items: [])
+
+--- After Turn 60
+1 moved to Master Suite
+--- After Turn 61
+1 moved to Tennessee Room
+--- After Turn 62
+Space: Armory
+Items: [Revolver]
+Players Present: []
+Coordinates: [22, 19] to [23, 26]
+--- Visible Neighboring Spaces ---
+Billiard Room (Items: [])
+Dining Hall (Items: [])
+Drawing Room (Items: [])
+
+--- After Turn 63
+1 moved to Dining Hall
+--- After Turn 64
+Space: Armory
+Items: [Revolver]
+Players Present: []
+Coordinates: [22, 19] to [23, 26]
+--- Visible Neighboring Spaces ---
+Billiard Room (Not visible)
+Dining Hall (Items: [])
+Drawing Room (Items: [])

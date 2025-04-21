@@ -1,0 +1,14 @@
+Player 1 added at space Armory
+Picked up: Billiard Cue
+Apr 21, 2025 12:42:13 AM killdoctorlucky.model.TargetCharacter decreaseHealth
+INFO: Doctor Lucky now has 48 HP left.
+1 attacked with Billiard Cue for 2 damage!
+Apr 21, 2025 12:42:13 AM controller.commands.AttackCommand execute
+INFO: 1 executed attack with Billiard Cue
+Picked up: Bad Cream
+Picked up: Letter Opener
+Apr 21, 2025 12:43:21 AM killdoctorlucky.model.TargetCharacter decreaseHealth
+INFO: Doctor Lucky now has 46 HP left.
+1 attacked with Bad Cream for 2 damage!
+Apr 21, 2025 12:43:21 AM controller.commands.AttackCommand execute
+INFO: 1 executed attack with Bad Cream
