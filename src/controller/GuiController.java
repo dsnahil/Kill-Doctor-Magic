@@ -1,32 +1,34 @@
+// File: src/controller/GuiController.java
 package controller;
 
 import controller.commands.AttackCommand;
 import controller.commands.DisplayPlayerCommand;
 import controller.commands.LookCommand;
 import controller.commands.MoveCommand;
-import controller.commands.MovePetCommand;
 import controller.commands.PickupCommand;
 import controller.commands.SaveMapCommand;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import killdoctorlucky.model.ComputerPlayer;
 import killdoctorlucky.model.Iplayer;
+import killdoctorlucky.model.Ipet;
 import killdoctorlucky.model.Ispace;
 import killdoctorlucky.model.Iworld;
 import killdoctorlucky.model.World;
 import view.GameView;
 import view.IviewFeatures;
 
-/**
- * GUI controller handling user interactions via Swing.
- */
 public class GuiController implements Icontroller, IviewFeatures {
   private final Iworld model;
   private final GameView view;
   private final int maxTurns;
   private int turnCount = 0;
-  private static final int SCALE = 10;
+  private static final int SCALE = 20;
 
   public GuiController(Iworld model, GameView view, int maxTurns) throws IOException {
     if (model == null || view == null) {
@@ -41,22 +43,31 @@ public class GuiController implements Icontroller, IviewFeatures {
         + "• Pickup items via button or 'P'.\n" + "• Look via button or 'L'.\n"
         + "• Attack via button or 'A'.\n");
     redrawAll();
+
+    // Kick off any computer turns until a human is up
+    SwingUtilities.invokeLater(() -> processTurns(false));
   }
 
   private void redrawAll() {
     view.redrawMap(model.generateWorldMap());
+
     List<Iplayer> players = model.getPlayers();
     Ispace target = model.getTargetLocation();
     view.setEntities(players, target);
-    view.setStatusText(String.format("%s’s Turn — Turn %d — %s",
-        players.get(turnCount % players.size()).getPlayerName(), turnCount,
-        model.viewTargetCharacter()));
+
+    if (model instanceof World) {
+      Ipet pet = ((World) model).getPet();
+      view.setPet(pet);
+    }
+
+    String current = players.get(turnCount % players.size()).getPlayerName();
+    view.setStatusText(
+        String.format("%s’s Turn — Turn %d — %s", current, turnCount, model.viewTargetCharacter()));
   }
 
   @Override
-  public void startGame() throws IOException {
-    // Not used in GUI mode
-  }
+  public void startGame() {
+    /* not used */ }
 
   @Override
   public void handleNewGame() {
@@ -87,32 +98,44 @@ public class GuiController implements Icontroller, IviewFeatures {
 
   @Override
   public void handleNextTurn() {
-    if (model.isGameNotOver() && turnCount < maxTurns) {
-      model.moveTargetCharacter();
-      if (model instanceof World) {
-        ((World) model).movePetAutomatically();
-      }
-      turnCount++;
-      view.appendToLog("--- After Turn " + turnCount);
-      redrawAll();
-    } else {
-      view.appendToLog("Game Over or max turns reached.");
-    }
+    processTurns(false);
   }
 
   @Override
   public void handleMove() {
-    // Not used: map-click based movement now
+    List<Ispace> spaces = (model instanceof World) ? ((World) model).getSpaces()
+        : Collections.emptyList();
+
+    String[] names = spaces.stream().map(Ispace::getSpaceName).toArray(String[]::new);
+
+    String choice = (String) JOptionPane.showInputDialog(view, "Choose a space to move to:", "Move",
+        JOptionPane.PLAIN_MESSAGE, null, names, names.length > 0 ? names[0] : null);
+
+    if (choice != null && !choice.isEmpty()) {
+      handleMoveTo(choice);
+    }
   }
 
   @Override
   public void handlePickup() {
-    exec(new PickupCommand(getPlayer(), null), true);
+    // Prompt for which item to pick up
+    Iplayer me = model.getPlayers().get(turnCount % model.getPlayers().size());
+    List<String> items = me.getPlayerLocation().getItems();
+    if (items.isEmpty()) {
+      JOptionPane.showMessageDialog(view, "No items here to pick up.");
+      return;
+    }
+    String choice = (String) JOptionPane.showInputDialog(view, "Choose an item to pick up:",
+        "Pickup", JOptionPane.PLAIN_MESSAGE, null, items.toArray(new String[0]), items.get(0));
+    if (choice != null) {
+      exec(new PickupCommand(getPlayer(), choice), true);
+    }
   }
 
   @Override
   public void handleLook() {
-    exec(new LookCommand(getPlayer()), false);
+    // Now consumes a turn
+    exec(new LookCommand(getPlayer()), true);
   }
 
   @Override
@@ -132,8 +155,7 @@ public class GuiController implements Icontroller, IviewFeatures {
 
   @Override
   public void handleMovePet() {
-    // pet moves automatically
-  }
+    /* pet moves in processTurns */ }
 
   @Override
   public void handleInventoryClick(String itemName) {
@@ -145,12 +167,8 @@ public class GuiController implements Icontroller, IviewFeatures {
     exec(new MoveCommand(getPlayer(), spaceName), true);
   }
 
-  /**
-   * Called when the map panel is clicked (x,y in pixels).
-   */
   @Override
   public void handleMapClick(int x, int y) {
-    // 1) Check if clicked on a player icon
     for (Iplayer p : model.getPlayers()) {
       Ispace loc = p.getPlayerLocation();
       int cx = ((loc.getUpperColumn() + loc.getLowerColumn()) / 2) * SCALE;
@@ -162,7 +180,6 @@ public class GuiController implements Icontroller, IviewFeatures {
         return;
       }
     }
-    // 2) Check if clicked inside any room to move there
     if (model instanceof World) {
       for (Ispace s : ((World) model).getSpaces()) {
         int rx = s.getUpperColumn() * SCALE;
@@ -182,43 +199,73 @@ public class GuiController implements Icontroller, IviewFeatures {
     }
   }
 
-  /**
-   * Executes a command and logs the result in the GUI.
-   */
   private void exec(controller.commands.Icommand cmd, boolean consumesTurn) {
     try {
       cmd.execute(model);
+      // Log human action
       if (cmd instanceof MoveCommand) {
-        String dest = ((MoveCommand) cmd).getTargetSpaceName();
-        view.appendToLog(getPlayer() + " moved to " + dest);
+        view.appendToLog(getPlayer() + " moved to " + ((MoveCommand) cmd).getTargetSpaceName());
       } else if (cmd instanceof PickupCommand) {
-        String item = ((PickupCommand) cmd).getItemName();
-        view.appendToLog(getPlayer() + " picked up " + item);
+        view.appendToLog(getPlayer() + " picked up " + ((PickupCommand) cmd).getItemName());
       } else if (cmd instanceof AttackCommand) {
-        String w = ((AttackCommand) cmd).getWeaponName();
-        view.appendToLog(getPlayer() + " attacked with " + w);
+        view.appendToLog(getPlayer() + " attacked with " + ((AttackCommand) cmd).getWeaponName());
       } else if (cmd instanceof LookCommand) {
         view.appendToLog(model.getSpaceInfo(getPlayer()));
       } else if (cmd instanceof DisplayPlayerCommand) {
         view.appendToLog(getPlayerInfo(getPlayer()));
       } else if (cmd instanceof SaveMapCommand) {
         view.appendToLog("Map saved.");
-      } else if (cmd instanceof MovePetCommand) {
-        view.appendToLog("Pet moved.");
       }
     } catch (Exception ex) {
       view.appendToLog("Error: " + ex.getMessage());
     }
+
+    redrawAll();
+
     if (consumesTurn) {
-      handleNextTurn();
-    } else {
-      redrawAll();
+      processTurns(true);
     }
   }
 
-  /**
-   * Formats a player's info for display.
-   */
+  private void processTurns(boolean afterHuman) {
+    new SwingWorker<Void, String>() {
+      @Override
+      protected Void doInBackground() {
+        if (afterHuman) {
+          advanceTargetAndPetNoUI();
+          publish("--- After Turn " + turnCount);
+        }
+        List<Iplayer> players = model.getPlayers();
+        while (turnCount < maxTurns && model.isGameNotOver()
+            && players.get(turnCount % players.size()) instanceof ComputerPlayer) {
+
+          ComputerPlayer cpu = (ComputerPlayer) players.get(turnCount % players.size());
+          cpu.takeTurn();
+          publish(cpu.getPlayerName() + " took its turn.");
+          advanceTargetAndPetNoUI();
+          publish("--- After Turn " + turnCount);
+        }
+        return null;
+      }
+
+      @Override
+      protected void process(List<String> logs) {
+        for (String line : logs) {
+          view.appendToLog(line);
+        }
+        redrawAll();
+      }
+    }.execute();
+  }
+
+  private void advanceTargetAndPetNoUI() {
+    model.moveTargetCharacter();
+    if (model instanceof World) {
+      ((World) model).movePetAutomatically();
+    }
+    turnCount++;
+  }
+
   private String getPlayerInfo(String name) {
     int idx = model.findPlayerIndex(name);
     Iplayer p = model.getPlayers().get(idx);
@@ -226,9 +273,6 @@ public class GuiController implements Icontroller, IviewFeatures {
         + p.getPlayerLocation().getSpaceName() + "\n" + "Items: " + p.getPlayerItems();
   }
 
-  /**
-   * Returns the current human player's name.
-   */
   private String getPlayer() {
     return model.getPlayers().get(turnCount % model.getPlayers().size()).getPlayerName();
   }

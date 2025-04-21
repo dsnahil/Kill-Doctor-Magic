@@ -223,7 +223,7 @@ public class World implements Iworld {
    */
   @Override
   public BufferedImage generateWorldMap() {
-    final int scale = 10;
+    final int scale = 20;
     final int margin = 50; // extra room on the right for long labels
     final int imgW = cols * scale + margin;
     final int imgH = rows * scale;

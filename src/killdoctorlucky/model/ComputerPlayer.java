@@ -38,13 +38,17 @@ public class ComputerPlayer extends Player {
   /**
    * Determines and executes the next action for the computer-controlled player.
    * If the computer is in the same space as the target and is unseen by others,
-   * it chooses deterministically to attack using the weapon in its inventory that
-   * does the most damage. Otherwise, it falls back to a random action.
+   * it attacks using the weapon with the most damage. Otherwise, it prioritizes:
+   * 1. Picking up items if available. 2. Moving toward Doctor Lucky's location if
+   * possible. 3. Looking around as a fallback.
+   *
+   * @return a string describing the action taken
    */
-  public void takeTurn() {
+  public String takeTurn() {
     Ispace current = getPlayerLocation();
     Ispace targetLocation = world.getTargetLocation();
-    // Check if in same room as target
+
+    // Check if in same room as target and unseen
     if (current.getSpaceName().equalsIgnoreCase(targetLocation.getSpaceName())) {
       boolean isSeen = false;
       for (Iplayer other : world.getPlayers()) {
@@ -58,61 +62,73 @@ public class ComputerPlayer extends Player {
         // Determine the weapon with the highest damage
         int bestDamage = 0;
         String bestWeapon = "default";
-        // Access the protected inventory from the parent Player class.
         for (Iitem item : inventory) {
           if (item.getDamage() > bestDamage) {
             bestDamage = item.getDamage();
             bestWeapon = item.getItemName();
           }
         }
-        // Attack using best weapon if available, otherwise default.
         attackDoctorLucky(bestWeapon);
-        System.out.println(getPlayerName() + " attacks with " + bestWeapon);
-        return;
+        return "attacked Doctor Lucky with " + bestWeapon;
       }
     }
-    // Fallback: choose a random action.
-    int choice = randGen.nextInt(4);
-    switch (choice) {
-      case 0:
-        // Move: choose a random neighbor if available.
-        List<String> neighbors = getPlayerLocation().getNeighbors();
-        if (!neighbors.isEmpty()) {
-          String target = neighbors.get(randGen.nextInt(neighbors.size()));
-          moveTo(world.getSpaceByName(target));
-          System.out.println(getPlayerName() + " moves to " + target);
-        } else {
-          System.out.println(getPlayerName() + " looks around (no neighbors).");
-        }
-        break;
-      case 1:
-        // Pickup: choose a random item from current space, if any.
-        List<String> items = getPlayerLocation().getItems();
-        if (!items.isEmpty()) {
-          String item = items.get(randGen.nextInt(items.size()));
-          pickUpItem(item);
-          System.out.println(getPlayerName() + " picks up " + item);
-        } else {
-          System.out.println(getPlayerName() + " looks around (no items).");
-        }
-        break;
-      case 2:
-        // Attack: use a random weapon from inventory, or default if none.
-        List<String> inventoryList = getPlayerItems();
-        if (!inventoryList.isEmpty()) {
-          String weapon = inventoryList.get(randGen.nextInt(inventoryList.size()));
-          attackDoctorLucky(weapon);
-          System.out.println(getPlayerName() + " attacks with " + weapon);
-        } else {
-          System.out.println(getPlayerName() + " has no weapon, using default attack.");
-          attackDoctorLucky("default");
-        }
-        break;
-      default:
-        // Look around.
-        System.out.println(getPlayerName() + " looks around:");
-        System.out.println(world.getSpaceInfo(getPlayerLocation().getSpaceName()));
-        break;
+
+    // Priority: Pickup > Move toward target > Look
+    List<String> items = getPlayerLocation().getItems();
+    if (!items.isEmpty()) {
+      String item = items.get(randGen.nextInt(items.size()));
+      pickUpItem(item);
+      return "picked up " + item;
     }
+
+    List<String> neighbors = getPlayerLocation().getNeighbors();
+    if (!neighbors.isEmpty()) {
+      // Try to move toward Doctor Lucky's location
+      String targetSpace = chooseSpaceTowardTarget(neighbors);
+      moveTo(world.getSpaceByName(targetSpace));
+      return "moved to " + targetSpace;
+    }
+
+    // Fallback: look around
+    return "looked around: " + world.getSpaceInfo(getPlayerLocation().getSpaceName());
+  }
+
+  /**
+   * Chooses a neighboring space that moves closer to Doctor Lucky's location.
+   * Falls back to a random neighbor if no clear path is better.
+   *
+   * @param neighbors list of neighboring space names
+   * @return the chosen space name
+   */
+  private String chooseSpaceTowardTarget(List<String> neighbors) {
+    Ispace targetLocation = world.getTargetLocation();
+    String bestSpace = neighbors.get(randGen.nextInt(neighbors.size())); // Default random
+    int minDistance = Integer.MAX_VALUE;
+
+    for (String neighborName : neighbors) {
+      Ispace neighbor = world.getSpaceByName(neighborName);
+      int distance = estimateDistance(neighbor, targetLocation);
+      if (distance < minDistance) {
+        minDistance = distance;
+        bestSpace = neighborName;
+      }
+    }
+    return bestSpace;
+  }
+
+  /**
+   * Estimates the Manhattan distance between two spaces based on their
+   * coordinates.
+   *
+   * @param space1 first space
+   * @param space2 second space
+   * @return estimated distance
+   */
+  private int estimateDistance(Ispace space1, Ispace space2) {
+    int x1 = (space1.getUpperColumn() + space1.getLowerColumn()) / 2;
+    int y1 = (space1.getUpperRow() + space1.getLowerRow()) / 2;
+    int x2 = (space2.getUpperColumn() + space2.getLowerColumn()) / 2;
+    int y2 = (space2.getUpperRow() + space2.getLowerRow()) / 2;
+    return Math.abs(x1 - x2) + Math.abs(y1 - y2);
   }
 }

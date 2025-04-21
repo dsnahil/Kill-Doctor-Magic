@@ -1,3 +1,4 @@
+// File: src/view/GameView.java
 package view;
 
 import java.awt.BorderLayout;
@@ -6,7 +7,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -32,6 +32,7 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
 import killdoctorlucky.model.Iplayer;
+import killdoctorlucky.model.Ipet;
 import killdoctorlucky.model.Ispace;
 
 /**
@@ -53,17 +54,17 @@ public class GameView extends JFrame implements Iview {
   // Controller callback interface
   private IviewFeatures features;
 
+  // The pet
+  private Ipet pet;
+
   // Background image
   private final BufferedImage background;
 
-  /**
-   * Constructs the main game window.
-   *
-   * @throws IOException if the background image can’t be loaded.
-   */
   public GameView() throws IOException {
     super("Kill Doctor Lucky");
     background = ImageIO.read(new File("res/spooky_bg.jpeg"));
+
+    // make a content panel that paints the background
     JPanel content = new JPanel() {
       private static final long serialVersionUID = 1L;
 
@@ -86,40 +87,32 @@ public class GameView extends JFrame implements Iview {
     setDefaultCloseOperation(EXIT_ON_CLOSE);
   }
 
-  /**
-   * Builds and installs the application menu bar.
-   */
   private void createMenuBar() {
-    final JMenuBar menuBar = new JMenuBar();
+    JMenuBar menuBar = new JMenuBar();
 
-    final JMenu fileMenu = new JMenu("File");
-    final JMenuItem newWorldMenuItem = new JMenuItem("New… (new world)");
-    final JMenuItem newSameWorldMenuItem = new JMenuItem("New… (same world)");
-    final JMenuItem quitMenuItem = new JMenuItem("Quit");
-    newWorldMenuItem.addActionListener(e -> features.handleNewWorld());
-    newSameWorldMenuItem.addActionListener(e -> features.handleNewGame());
-    quitMenuItem.addActionListener(e -> features.handleQuit());
-    fileMenu.add(newWorldMenuItem);
-    fileMenu.add(newSameWorldMenuItem);
+    JMenu fileMenu = new JMenu("File");
+    JMenuItem newWorld = new JMenuItem("New… (new world)");
+    JMenuItem newSame = new JMenuItem("New… (same world)");
+    JMenuItem quit = new JMenuItem("Quit");
+    newWorld.addActionListener(e -> features.handleNewWorld());
+    newSame.addActionListener(e -> features.handleNewGame());
+    quit.addActionListener(e -> features.handleQuit());
+    fileMenu.add(newWorld);
+    fileMenu.add(newSame);
     fileMenu.addSeparator();
-    fileMenu.add(quitMenuItem);
+    fileMenu.add(quit);
 
-    final JMenu helpMenu = new JMenu("Help");
-    final JMenuItem aboutMenuItem = new JMenuItem("About");
-    aboutMenuItem.addActionListener(e -> new AboutDialog(this).setVisible(true));
-    helpMenu.add(aboutMenuItem);
+    JMenu helpMenu = new JMenu("Help");
+    JMenuItem about = new JMenuItem("About");
+    about.addActionListener(e -> new AboutDialog(this).setVisible(true));
+    helpMenu.add(about);
 
     menuBar.add(fileMenu);
     menuBar.add(helpMenu);
     setJMenuBar(menuBar);
   }
 
-  /**
-   * Lays out the main user interface (status bar, map, controls, and log).
-   *
-   * @param content the main content panel.
-   */
-  private void initUserInterface(final JPanel content) {
+  private void initUserInterface(JPanel content) {
     statusLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     content.add(statusLabel, BorderLayout.NORTH);
 
@@ -130,8 +123,8 @@ public class GameView extends JFrame implements Iview {
 
     for (String label : new String[] { "Next Turn", "Move", "Pickup", "Look", "Attack", "Describe",
         "Save Map" }) {
-      JButton button = new JButton(label);
-      button.addActionListener(e -> {
+      JButton btn = new JButton(label);
+      btn.addActionListener(e -> {
         switch (label) {
           case "Next Turn":
             features.handleNextTurn();
@@ -154,20 +147,18 @@ public class GameView extends JFrame implements Iview {
           case "Save Map":
             features.handleSaveMap();
             break;
-          default:
-            break;
         }
       });
-      eastButtonsPanel.add(button);
+      eastButtonsPanel.add(btn);
     }
     eastButtonsPanel.setOpaque(false);
     content.add(eastButtonsPanel, BorderLayout.EAST);
 
-    logArea.setEditable(false);
     JScrollPane logScroll = new JScrollPane(logArea);
     logScroll.setBorder(new TitledBorder("Game Log"));
     logScroll.setOpaque(false);
     logScroll.getViewport().setOpaque(false);
+    logArea.setEditable(false);
     content.add(logScroll, BorderLayout.SOUTH);
 
     mapPanel.addMouseListener(new MouseAdapter() {
@@ -178,135 +169,143 @@ public class GameView extends JFrame implements Iview {
     });
   }
 
-  /**
-   * /** Sets up global key bindings for quick actions.
-   */
   private void initKeyBindings() {
-    InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-    ActionMap actionMap = getRootPane().getActionMap();
+    InputMap im = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+    ActionMap am = getRootPane().getActionMap();
 
-    inputMap.put(KeyStroke.getKeyStroke('M'), "move");
-    actionMap.put("move", new AbstractAction() {
+    im.put(KeyStroke.getKeyStroke('M'), "move");
+    am.put("move", new AbstractAction() {
       private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(java.awt.event.ActionEvent e) {
         features.handleMove();
       }
     });
 
-    inputMap.put(KeyStroke.getKeyStroke('P'), "pickup");
-    actionMap.put("pickup", new AbstractAction() {
+    im.put(KeyStroke.getKeyStroke('P'), "pickup");
+    am.put("pickup", new AbstractAction() {
       private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(java.awt.event.ActionEvent e) {
         features.handlePickup();
       }
     });
 
-    inputMap.put(KeyStroke.getKeyStroke('L'), "look");
-    actionMap.put("look", new AbstractAction() {
+    im.put(KeyStroke.getKeyStroke('L'), "look");
+    am.put("look", new AbstractAction() {
       private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(java.awt.event.ActionEvent e) {
         features.handleLook();
       }
     });
 
-    inputMap.put(KeyStroke.getKeyStroke('A'), "attack");
-    actionMap.put("attack", new AbstractAction() {
+    im.put(KeyStroke.getKeyStroke('A'), "attack");
+    am.put("attack", new AbstractAction() {
       private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(java.awt.event.ActionEvent e) {
         features.handleAttack();
       }
     });
   }
 
   @Override
-  public void redrawMap(final BufferedImage map) {
+  public void redrawMap(BufferedImage map) {
     mapPanel.setImage(map);
     mapPanel.repaint();
   }
 
   @Override
-  public void appendToLog(final String text) {
+  public void appendToLog(String text) {
     logArea.append(text + "\n");
     logArea.setCaretPosition(logArea.getDocument().getLength());
   }
 
   @Override
-  public void setViewFeatures(final IviewFeatures f) {
+  public void setViewFeatures(IviewFeatures f) {
     this.features = f;
   }
 
-  /**
-   * Updates the status bar text.
-   *
-   * @param text the new status text.
-   */
-  public void setStatusText(final String text) {
-    statusLabel.setText(text);
+  /** Update the status bar. */
+  public void setStatusText(String txt) {
+    statusLabel.setText(txt);
   }
 
-  /**
-   * Updates the positions of players and Doctor Lucky on the map.
-   *
-   * @param players the list of players.
-   * @param target  the space containing Doctor Lucky.
-   */
-  public void setEntities(final List<Iplayer> players, final Ispace target) {
+  /** Show players + Dr. Lucky. */
+  public void setEntities(List<Iplayer> players, Ispace target) {
     mapPanel.setEntities(players, target);
   }
 
+  /** NEW: store the pet so we can paint it. */
+  public void setPet(Ipet pet) {
+    this.pet = pet;
+    mapPanel.setPet(pet);
+  }
+
   /**
-   * Inner panel that draws the map and entity icons.
+   * Inner panel that draws the map image plus all entities.
    */
   private class MapPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-
     private BufferedImage img;
     private List<Iplayer> players = Collections.emptyList();
     private Ispace target;
-    private final int scale = 10;
+    private Ipet pet;
+    private final int scale = 20;
 
-    void setImage(final BufferedImage map) {
-      this.img = map;
-      if (map != null) {
-        setPreferredSize(new Dimension(map.getWidth(), map.getHeight()));
+    void setImage(BufferedImage m) {
+      this.img = m;
+      if (m != null) {
+        setPreferredSize(new Dimension(m.getWidth(), m.getHeight()));
         revalidate();
       }
     }
 
-    void setEntities(final List<Iplayer> players, final Ispace target) {
+    void setEntities(List<Iplayer> players, Ispace target) {
       this.players = players;
       this.target = target;
     }
 
+    void setPet(Ipet pet) {
+      this.pet = pet;
+    }
+
     @Override
-    protected void paintComponent(final Graphics g) {
+    protected void paintComponent(Graphics g) {
       super.paintComponent(g);
-      if (img != null) {
-        g.drawImage(img, 0, 0, null);
-        Graphics2D g2 = (Graphics2D) g;
+      if (img == null) {
+        return;
+      }
+      g.drawImage(img, 0, 0, null);
+      Graphics2D g2 = (Graphics2D) g;
 
-        if (target != null) {
-          int cx = ((target.getUpperColumn() + target.getLowerColumn()) / 2) * scale;
-          int cy = ((target.getUpperRow() + target.getLowerRow()) / 2) * scale;
-          g2.setColor(Color.RED);
-          g2.fillRect(cx - 6, cy - 6, 12, 12);
-        }
+      // draw Dr. Lucky (red square)
+      if (target != null) {
+        int cx = ((target.getUpperColumn() + target.getLowerColumn()) / 2) * scale;
+        int cy = ((target.getUpperRow() + target.getLowerRow()) / 2) * scale;
+        g2.setColor(Color.RED);
+        g2.fillRect(cx - 6, cy - 6, 12, 12);
+      }
 
-        g2.setColor(Color.BLUE);
-        for (Iplayer p : players) {
-          Ispace s = p.getPlayerLocation();
-          int cx = ((s.getUpperColumn() + s.getLowerColumn()) / 2) * scale;
-          int cy = ((s.getUpperRow() + s.getLowerRow()) / 2) * scale;
-          g2.fillOval(cx - 5, cy - 5, 10, 10);
-        }
+      // draw players (blue circles)
+      g2.setColor(Color.BLUE);
+      for (Iplayer p : players) {
+        Ispace s = p.getPlayerLocation();
+        int cx = ((s.getUpperColumn() + s.getLowerColumn()) / 2) * scale;
+        int cy = ((s.getUpperRow() + s.getLowerRow()) / 2) * scale;
+        g2.fillOval(cx - 5, cy - 5, 10, 10);
+      }
+
+      // draw pet (green triangle) — use getCurrentSpace()
+      if (pet != null) {
+        Ispace ps = pet.getCurrentSpace();
+        int cx = ((ps.getUpperColumn() + ps.getLowerColumn()) / 2) * scale;
+        int cy = ((ps.getUpperRow() + ps.getLowerRow()) / 2) * scale;
+        g2.setColor(Color.GREEN);
+        int[] xs = { cx, cx - 6, cx + 6 };
+        int[] ys = { cy - 6, cy + 6, cy + 6 };
+        g2.fillPolygon(xs, ys, 3);
       }
     }
   }
