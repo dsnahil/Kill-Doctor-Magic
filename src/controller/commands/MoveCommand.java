@@ -33,7 +33,11 @@ public class MoveCommand implements Icommand {
     player.moveTo(newSpace); // Will throw if invalid neighbor
   }
 
-  /** Exposed for GUI logging. */
+  /**
+   * Gets the name of the target space.
+   *
+   * @return the target space name.
+   */
   public String getTargetSpaceName() {
     return targetSpaceName;
   }

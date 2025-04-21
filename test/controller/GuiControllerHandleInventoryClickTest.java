@@ -2,6 +2,7 @@ package controller;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import killdoctorlucky.model.Ipet;
@@ -26,7 +27,7 @@ public class GuiControllerHandleInventoryClickTest {
    * Prepare a fresh controller and stubs before each test.
    */
   @Before
-  public void setUp() throws Exception {
+  public void setUp() throws IOException {
     view = new TestView();
     world = new TestWorld();
     controller = new GuiController(world, view, 5);

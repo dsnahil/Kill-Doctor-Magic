@@ -50,7 +50,12 @@ public class ControllerImpl implements Icontroller {
   }
 
   /**
-   * Overloaded constructor using a default random generator.
+   * Constructs a ControllerImpl.
+   *
+   * @param model    the game world model
+   * @param in       a Readable source (e.g., System.in)
+   * @param out      an Appendable sink (e.g., System.out)
+   * @param maxTurns the maximum number of turns allowed
    */
   public ControllerImpl(Iworld model, Readable in, Appendable out, int maxTurns) {
     this(model, in, out, maxTurns, new RandomGenerator());

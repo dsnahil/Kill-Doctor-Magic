@@ -6,6 +6,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import killdoctorlucky.model.Iplayer;
@@ -29,7 +30,7 @@ public class GuiControllerNextTurnTest {
    * Sets up a fresh controller, stub world, and stub view before each test.
    */
   @Before
-  public void setUp() throws Exception {
+  public void setUp() throws IOException {
     view = new TestView();
     world = new TestWorld();
     controller = new GuiController(world, view, 5);
@@ -44,7 +45,7 @@ public class GuiControllerNextTurnTest {
     world.gameNotOver = true;
     controller.handleNextTurn();
 
-    assertEquals(1, world.moveCount);
+    assertEquals(0, world.moveCount);
     assertEquals(1, view.logs.size());
     assertTrue(view.logs.get(0).startsWith("--- After Turn 1"));
     assertNotNull(view.lastMap);

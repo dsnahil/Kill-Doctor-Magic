@@ -19,7 +19,11 @@ public interface IviewFeatures {
   /** Handle a move action (via Move button or key 'M'). */
   void handleMove();
 
-  /** Handle moving to a specific space (via map click). */
+  /**
+   * Handle moving to a specific space (via map click).
+   *
+   * @param spaceName the name of the space to move to
+   */
   void handleMoveTo(String spaceName);
 
   /** Handle picking up an item (via button or key 'P'). */
@@ -37,12 +41,21 @@ public interface IviewFeatures {
   /** Handle saving the current map to a file. */
   void handleSaveMap();
 
-  /** Double‑click an inventory item to attack with it. */
+  /**
+   * Double‑click an inventory item to attack with it.
+   *
+   * @param itemName the name of the item being used to attack
+   */
   void handleInventoryClick(String itemName);
 
   /** Handle moving the pet character. */
   void handleMovePet();
 
-  /** Handle clicking on the map at the given coordinates. */
+  /**
+   * Handle clicking on the map at the given coordinates.
+   *
+   * @param x the x-coordinate of the click
+   * @param y the y-coordinate of the click
+   */
   void handleMapClick(int x, int y);
 }

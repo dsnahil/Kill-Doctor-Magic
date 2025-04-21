@@ -460,6 +460,8 @@ public class World implements Iworld {
 
   /**
    * Exposed so GUI can iterate all spaces to hit‑test clicks.
+   *
+   * @return the list of all spaces in the world
    */
   public List<Ispace> getSpaces() {
     return spaces;

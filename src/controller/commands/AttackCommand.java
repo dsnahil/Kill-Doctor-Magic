@@ -35,7 +35,11 @@ public class AttackCommand implements Icommand {
     logger.info(playerName + " executed attack with " + weaponName);
   }
 
-  /** Exposed for GUI logging. */
+  /**
+   * Gets the name of the weapon used in the attack.
+   *
+   * @return the weapon name.
+   */
   public String getWeaponName() {
     return weaponName;
   }

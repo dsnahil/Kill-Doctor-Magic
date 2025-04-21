@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import killdoctorlucky.model.Ipet;
@@ -28,7 +29,7 @@ public class GuiControllerHandleDescribeTest {
    * Prepare test fixtures before each test.
    */
   @Before
-  public void setUp() throws Exception {
+  public void setUp() throws IOException {
     view = new TestView();
     world = new TestWorld();
     controller = new GuiController(world, view, 5);

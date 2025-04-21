@@ -13,7 +13,9 @@ public class SaveMapCommand implements Icommand {
   private final String fileName;
 
   /**
-   * Command to generate and save the world map as a PNG file.
+   * Constructs a SaveMapCommand.
+   *
+   * @param fileName the name of the file to save the map.
    */
   public SaveMapCommand(String fileName) {
     this.fileName = fileName;

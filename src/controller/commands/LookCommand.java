@@ -11,9 +11,9 @@ public class LookCommand implements Icommand {
   private final String playerName;
 
   /**
-   * Command for a player to "look around" their current space. This command
-   * retrieves and displays detailed information about the space the player is
-   * currently in.
+   * Constructs a LookCommand.
+   *
+   * @param playerName the name of the player looking around.
    */
   public LookCommand(String playerName) {
     this.playerName = playerName;

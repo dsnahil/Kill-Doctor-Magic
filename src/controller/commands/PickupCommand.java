@@ -31,7 +31,11 @@ public class PickupCommand implements Icommand {
     player.pickUpItem(itemName);
   }
 
-  /** Exposed for GUI logging. */
+  /**
+   * Gets the name of the item picked up.
+   *
+   * @return the item name.
+   */
   public String getItemName() {
     return itemName;
   }

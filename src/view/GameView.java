@@ -1,4 +1,3 @@
-// File: src/view/GameView.java
 package view;
 
 import java.awt.BorderLayout;
@@ -31,8 +30,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
-import killdoctorlucky.model.Iplayer;
 import killdoctorlucky.model.Ipet;
+import killdoctorlucky.model.Iplayer;
 import killdoctorlucky.model.Ispace;
 
 /**
@@ -54,12 +53,14 @@ public class GameView extends JFrame implements Iview {
   // Controller callback interface
   private IviewFeatures features;
 
-  // The pet
-  private Ipet pet;
-
   // Background image
   private final BufferedImage background;
 
+  /**
+   * Constructs the GameView GUI and initializes all components.
+   *
+   * @throws IOException if background image cannot be loaded
+   */
   public GameView() throws IOException {
     super("Kill Doctor Lucky");
     background = ImageIO.read(new File("res/spooky_bg.jpeg"));
@@ -88,9 +89,9 @@ public class GameView extends JFrame implements Iview {
   }
 
   private void createMenuBar() {
-    JMenuBar menuBar = new JMenuBar();
+    final JMenuBar menuBar = new JMenuBar();
 
-    JMenu fileMenu = new JMenu("File");
+    final JMenu fileMenu = new JMenu("File");
     JMenuItem newWorld = new JMenuItem("New… (new world)");
     JMenuItem newSame = new JMenuItem("New… (same world)");
     JMenuItem quit = new JMenuItem("Quit");
@@ -102,7 +103,7 @@ public class GameView extends JFrame implements Iview {
     fileMenu.addSeparator();
     fileMenu.add(quit);
 
-    JMenu helpMenu = new JMenu("Help");
+    final JMenu helpMenu = new JMenu("Help");
     JMenuItem about = new JMenuItem("About");
     about.addActionListener(e -> new AboutDialog(this).setVisible(true));
     helpMenu.add(about);
@@ -146,6 +147,8 @@ public class GameView extends JFrame implements Iview {
             break;
           case "Save Map":
             features.handleSaveMap();
+            break;
+          default:
             break;
         }
       });
@@ -227,19 +230,31 @@ public class GameView extends JFrame implements Iview {
     this.features = f;
   }
 
-  /** Update the status bar. */
+  /**
+   * Update the status bar.
+   *
+   * @param txt the text to display in the status bar
+   */
   public void setStatusText(String txt) {
     statusLabel.setText(txt);
   }
 
-  /** Show players + Dr. Lucky. */
+  /**
+   * Show players and Dr. Lucky on the map.
+   *
+   * @param players list of players to be displayed
+   * @param target  the space where Dr. Lucky is currently located
+   */
   public void setEntities(List<Iplayer> players, Ispace target) {
     mapPanel.setEntities(players, target);
   }
 
-  /** NEW: store the pet so we can paint it. */
+  /**
+   * Store and draw the pet on the map.
+   *
+   * @param pet the pet to be displayed
+   */
   public void setPet(Ipet pet) {
-    this.pet = pet;
     mapPanel.setPet(pet);
   }
 
@@ -297,7 +312,7 @@ public class GameView extends JFrame implements Iview {
         g2.fillOval(cx - 5, cy - 5, 10, 10);
       }
 
-      // draw pet (green triangle) — use getCurrentSpace()
+      // draw pet (green triangle)
       if (pet != null) {
         Ispace ps = pet.getCurrentSpace();
         int cx = ((ps.getUpperColumn() + ps.getLowerColumn()) / 2) * scale;

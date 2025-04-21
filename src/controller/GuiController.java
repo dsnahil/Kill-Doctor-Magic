@@ -14,21 +14,34 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import killdoctorlucky.model.ComputerPlayer;
-import killdoctorlucky.model.Iplayer;
 import killdoctorlucky.model.Ipet;
+import killdoctorlucky.model.Iplayer;
 import killdoctorlucky.model.Ispace;
 import killdoctorlucky.model.Iworld;
 import killdoctorlucky.model.World;
 import view.GameView;
 import view.IviewFeatures;
 
+/**
+ * Controller for the Kill Doctor Lucky GUI. Connects the Swing-based GameView
+ * with the game model, handles all user actions, and advances Doctor Lucky and
+ * the pet between turns.
+ */
 public class GuiController implements Icontroller, IviewFeatures {
+  private static final int SCALE = 20;
   private final Iworld model;
   private final GameView view;
   private final int maxTurns;
   private int turnCount = 0;
-  private static final int SCALE = 20;
 
+  /**
+   * Constructs a new GuiController.
+   *
+   * @param model    the game world model
+   * @param view     the Swing-based game view
+   * @param maxTurns the maximum number of turns before the game ends
+   * @throws IOException if initialization of the view fails
+   */
   public GuiController(Iworld model, GameView view, int maxTurns) throws IOException {
     if (model == null || view == null) {
       throw new IllegalArgumentException("Model and view cannot be null.");
@@ -66,7 +79,8 @@ public class GuiController implements Icontroller, IviewFeatures {
 
   @Override
   public void startGame() {
-    /* not used */ }
+    // Not used in GUI
+  }
 
   @Override
   public void handleNewGame() {
@@ -158,20 +172,17 @@ public class GuiController implements Icontroller, IviewFeatures {
 
   @Override
   public void handleSaveMap() {
-    // Prompt for a filename so we never pass null to SaveMapCommand
     String fileName = JOptionPane.showInputDialog(view, "Enter filename (e.g. worldmap.png):",
         "Save Map", JOptionPane.QUESTION_MESSAGE);
     if (fileName == null || fileName.trim().isEmpty()) {
-      // user cancelled or entered nothing
       return;
     }
-    // Save the map and consume a turn
-    exec(new SaveMapCommand(fileName.trim()), /* consumesTurn= */ true);
+    exec(new SaveMapCommand(fileName.trim()), true);
   }
 
   @Override
   public void handleMovePet() {
-    // pet moves in processTurns
+    // Handled in processTurns
   }
 
   @Override
@@ -186,6 +197,7 @@ public class GuiController implements Icontroller, IviewFeatures {
 
   @Override
   public void handleMapClick(int x, int y) {
+    // Check for player icon clicks
     for (Iplayer p : model.getPlayers()) {
       Ispace loc = p.getPlayerLocation();
       int cx = ((loc.getUpperColumn() + loc.getLowerColumn()) / 2) * SCALE;
@@ -197,6 +209,7 @@ public class GuiController implements Icontroller, IviewFeatures {
         return;
       }
     }
+    // Otherwise check for room clicks
     if (model instanceof World) {
       for (Ispace s : ((World) model).getSpaces()) {
         int rx = s.getUpperColumn() * SCALE;
@@ -232,7 +245,7 @@ public class GuiController implements Icontroller, IviewFeatures {
       } else if (cmd instanceof SaveMapCommand) {
         view.appendToLog("Map saved.");
       }
-    } catch (Exception ex) {
+    } catch (IllegalArgumentException ex) {
       view.appendToLog("Error: " + ex.getMessage());
     }
 
@@ -248,7 +261,7 @@ public class GuiController implements Icontroller, IviewFeatures {
       @Override
       protected Void doInBackground() {
         if (afterHuman) {
-          advanceTargetAndPetNoUI();
+          advanceTargetAndPet();
           publish("--- After Turn " + turnCount);
         }
         List<Iplayer> players = model.getPlayers();
@@ -258,7 +271,7 @@ public class GuiController implements Icontroller, IviewFeatures {
           ComputerPlayer cpu = (ComputerPlayer) players.get(turnCount % players.size());
           cpu.takeTurn();
           publish(cpu.getPlayerName() + " took its turn.");
-          advanceTargetAndPetNoUI();
+          advanceTargetAndPet();
           publish("--- After Turn " + turnCount);
         }
         return null;
@@ -274,7 +287,7 @@ public class GuiController implements Icontroller, IviewFeatures {
     }.execute();
   }
 
-  private void advanceTargetAndPetNoUI() {
+  private void advanceTargetAndPet() {
     model.moveTargetCharacter();
     if (model instanceof World) {
       ((World) model).movePetAutomatically();
