@@ -54,28 +54,71 @@ public class GameView extends JFrame implements Iview {
   private IviewFeatures features;
 
   // Background image
-  private final BufferedImage background;
+  private BufferedImage background;
 
   /**
    * Constructs the GameView GUI and initializes all components.
-   *
-   * @throws IOException if background image cannot be loaded
    */
-  public GameView() throws IOException {
+  public GameView() {
     super("Kill Doctor Lucky");
-    background = ImageIO.read(new File("res/spooky_bg.jpeg"));
 
-    // make a content panel that paints the background
+    // Load the background image (try PNG first, fall back to JPEG)
+    // First, try loading the PNG
+    File backgroundFile = new File("res/spooky_bg.png");
+    System.out.println("Looking for background image at: " + backgroundFile.getAbsolutePath());
+    if (!backgroundFile.exists()) {
+      System.err.println("Background image not found at: " + backgroundFile.getAbsolutePath());
+      // Fall back to trying the JPEG
+      backgroundFile = new File("res/spooky_bg.jpeg");
+      System.out.println("Falling back to JPEG at: " + backgroundFile.getAbsolutePath());
+      if (!backgroundFile.exists()) {
+        System.err
+            .println("JPEG background image not found at: " + backgroundFile.getAbsolutePath());
+        background = null;
+      } else {
+        background = tryLoadImage(backgroundFile);
+      }
+    } else {
+      background = tryLoadImage(backgroundFile);
+    }
+
+    // Make a content panel that paints the background
     JPanel content = new JPanel() {
       private static final long serialVersionUID = 1L;
 
       @Override
       protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(background, 0, 0, getWidth(), getHeight(), null);
+        if (background != null && getWidth() > 0 && getHeight() > 0) {
+          try {
+            // Log the panel's size to ensure it's valid
+            System.out
+                .println("Drawing background image at size: " + getWidth() + "x" + getHeight());
+            // Draw the image, scaling it to the panel's size
+            g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+          } catch (Exception e) {
+            System.err.println("Failed to draw background image: " + e.getMessage());
+            g.setColor(Color.DARK_GRAY);
+            g.fillRect(0, 0, getWidth(), getHeight());
+          }
+        } else {
+          // Fallback to a default color (e.g., dark gray) if image is null or panel size
+          // is invalid
+          if (background == null) {
+            System.out.println("Background image is null, using fallback color.");
+          } else {
+            System.out.println("Panel size invalid (" + getWidth() + "x" + getHeight()
+                + "), using fallback color.");
+          }
+          g.setColor(Color.DARK_GRAY);
+          g.fillRect(0, 0, getWidth(), getHeight());
+        }
       }
     };
     content.setLayout(new BorderLayout(5, 5));
+    content.setOpaque(true); // Ensure the content panel itself is opaque to paint the background
+    // Set a preferred size to ensure the panel has a valid size initially
+    content.setPreferredSize(new Dimension(800, 600));
     setContentPane(content);
 
     createMenuBar();
@@ -86,6 +129,47 @@ public class GameView extends JFrame implements Iview {
     pack();
     setLocationRelativeTo(null);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+    // Log to the UI if the background failed to load
+    if (background == null) {
+      appendToLog("Warning: Background image failed to load. Using default background color.");
+    }
+
+    // Force a repaint after the UI is fully initialized
+    content.repaint();
+  }
+
+  /**
+   * Helper method to load and convert an image file.
+   *
+   * @param backgroundFile the file to load
+   * @return the loaded and converted BufferedImage, or null if loading fails
+   */
+  private BufferedImage tryLoadImage(File backgroundFile) {
+    try {
+      BufferedImage originalImage = ImageIO.read(backgroundFile);
+      if (originalImage != null) {
+        System.out.println("Background image loaded successfully.");
+        System.out.println("Original image dimensions: " + originalImage.getWidth() + "x"
+            + originalImage.getHeight());
+        // Convert the image to TYPE_INT_ARGB to ensure compatibility with Swing
+        BufferedImage convertedImage = new BufferedImage(originalImage.getWidth(),
+            originalImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = convertedImage.createGraphics();
+        g2d.drawImage(originalImage, 0, 0, null);
+        g2d.dispose();
+        System.out.println("Converted image dimensions: " + convertedImage.getWidth() + "x"
+            + convertedImage.getHeight());
+        return convertedImage;
+      } else {
+        System.err.println(
+            "Failed to load background image: ImageIO.read returned null (unsupported format?).");
+        return null;
+      }
+    } catch (IOException e) {
+      System.err.println("Failed to load background image: " + e.getMessage());
+      return null;
+    }
   }
 
   private void createMenuBar() {
@@ -114,14 +198,19 @@ public class GameView extends JFrame implements Iview {
   }
 
   private void initUserInterface(JPanel content) {
+    // Make the status label non-opaque
     statusLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+    statusLabel.setOpaque(false);
     content.add(statusLabel, BorderLayout.NORTH);
 
+    // Make the map scroll pane and its viewport non-opaque
     mapScroll.setBorder(new TitledBorder("World Map"));
     mapScroll.setOpaque(false);
     mapScroll.getViewport().setOpaque(false);
+    mapPanel.setOpaque(false); // Ensure the map panel itself is non-opaque
     content.add(mapScroll, BorderLayout.CENTER);
 
+    // Create buttons and make the east panel non-opaque
     for (String label : new String[] { "Next Turn", "Move", "Pickup", "Look", "Attack", "Describe",
         "Save Map" }) {
       JButton btn = new JButton(label);
@@ -157,10 +246,12 @@ public class GameView extends JFrame implements Iview {
     eastButtonsPanel.setOpaque(false);
     content.add(eastButtonsPanel, BorderLayout.EAST);
 
+    // Make the log scroll pane and its viewport non-opaque
     JScrollPane logScroll = new JScrollPane(logArea);
     logScroll.setBorder(new TitledBorder("Game Log"));
     logScroll.setOpaque(false);
     logScroll.getViewport().setOpaque(false);
+    logArea.setOpaque(false); // Make the text area non-opaque
     logArea.setEditable(false);
     content.add(logScroll, BorderLayout.SOUTH);
 
