@@ -90,17 +90,10 @@ public class GameView extends JFrame implements Iview {
       protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (background != null && getWidth() > 0 && getHeight() > 0) {
-          try {
-            // Log the panel's size to ensure it's valid
-            System.out
-                .println("Drawing background image at size: " + getWidth() + "x" + getHeight());
-            // Draw the image, scaling it to the panel's size
-            g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
-          } catch (Exception e) {
-            System.err.println("Failed to draw background image: " + e.getMessage());
-            g.setColor(Color.DARK_GRAY);
-            g.fillRect(0, 0, getWidth(), getHeight());
-          }
+          // Log the panel's size to ensure it's valid
+          System.out.println("Drawing background image at size: " + getWidth() + "x" + getHeight());
+          // Draw the image, scaling it to the panel's size
+          g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
         } else {
           // Fallback to a default color (e.g., dark gray) if image is null or panel size
           // is invalid
