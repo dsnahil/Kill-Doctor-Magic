@@ -211,7 +211,7 @@ public class GameView extends JFrame implements Iview {
     content.add(mapScroll, BorderLayout.CENTER);
 
     // Create buttons and make the east panel non-opaque
-    for (String label : new String[] { "Next Turn", "Move", "Pickup", "Look", "Attack", "Describe",
+    for (String label : new String[] { "Move", "Pickup", "Look", "Attack", "Describe",
         "Save Map" }) {
       JButton btn = new JButton(label);
       btn.addActionListener(e -> {
