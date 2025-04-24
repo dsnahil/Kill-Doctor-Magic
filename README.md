@@ -121,14 +121,9 @@ java -cp "bin:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar" org.junit.runner.JUn
   killdoctorlucky.model.PlayerTest \
   …<and so on>…
 
-```
-
----
 
 ## Directory Structure
 
-```
-.
 - **src/**  
    - **controller/** – Contains the game controller and command implementations.
    - **killdoctorlucky/model/** – Contains the model classes (World, Player, TargetCharacter, Item, Pet, etc.).
@@ -140,9 +135,6 @@ java -cp "bin:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar" org.junit.runner.JUn
  - **test/**  
    - Contains JUnit test classes in the package `killdoctorlucky.model`.
 └── README.md
-```
-
----
 
 ## Design & Testability Notes
 
