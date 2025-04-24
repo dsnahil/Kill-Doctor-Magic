@@ -77,6 +77,15 @@ Kill Doctor Lucky is a text‑based, turn‑based game in which human and comput
 
 We now have **comprehensive** JUnit‑4 coverage of all non‑GUI code:
 
+ JUnit 4 tests are located under the **test/killdoctorlucky/model/** directory and are organized by functionality:
+ - **ControllerTest:** Tests the controller’s behavior (e.g., quitting the game).
+ - **GameEndConditionsTest:** Checks game-ending conditions (target death, draw).
+ - **PlayerAttackTest:** Verifies player attack functionality.
+ - **PlayerTest:** Ensures proper behavior for movement, item pickup, and error handling.
+ - **TargetCharacterTest:** Tests Doctor Lucky’s health management.
+ - **TestItemCreation:** Validates item creation and properties.
+ - **WorldTest:** Confirms world initialization, space management, neighbor relationships, and map generation.
+ - **Command Tests:** There are dedicated test classes (e.g., MoveCommandTest, LookCommandTest, DisplayPlayerCommandTest, SaveMapCommandTest, WanderingPetTest, PetVisibilityTest, etc.) that test each command’s behavior in isolation.
 - **Utility Tests**  
   - `RandomGeneratorTest`  
   - `TargetCharacterTest`  
@@ -111,25 +120,21 @@ java -cp "bin:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar" org.junit.runner.JUn
   killdoctorlucky.model.SpaceTest \
   killdoctorlucky.model.PlayerTest \
   …<and so on>…
-```
 
----
 
 ## Directory Structure
 
-```
-.
-├── src/
-│   ├── controller/          # Controllers & commands
-│   ├── killdoctorlucky/
-│   │   └── model/           # Domain model (World, Player, Pet, etc.)
-│   └── util/                # Utilities (RandomGenerator)
-├── res/                     # Mansion file, sample run transcripts, runnable.jar
-├── test/                    # JUnit tests grouped by package
+- **src/**  
+   - **controller/** – Contains the game controller and command implementations.
+   - **killdoctorlucky/model/** – Contains the model classes (World, Player, TargetCharacter, Item, Pet, etc.).
+   - **util/** – Contains utility classes (e.g., RandomGenerator).
+   - **controller/commands/** - What commands are used.
+ - **res/**  
+   - Contains resource files such as `mansion.txt` (the mansion specification) and any additional assets (e.g., graphics JAR if used for map generation).
+   - Contains sample run files (e.g., `run_visibility.txt`, `run_move_pet.txt`, etc.).
+ - **test/**  
+   - Contains JUnit test classes in the package `killdoctorlucky.model`.
 └── README.md
-```
-
----
 
 ## Design & Testability Notes
 
@@ -144,7 +149,48 @@ java -cp "bin:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar" org.junit.runner.JUn
 - **Extensibility:**  
   - New commands or AI strategies can be added without touching core loops.  
   - Pet behavior is pluggable—switch easily between manual and automatic.
-
----
+ 
+ ## Assumptions
+ 
+ - The mansion file (`res/mansion.txt`) is well-formed and follows a consistent format.
+ - Players are uniquely identified by their names.
+ - Movement is only allowed to spaces that are adjacent, as defined by the neighbor relationships.
+ - Doctor Lucky’s health is only modified by valid attacks.
+ - The pet is initially placed with Doctor Lucky and is hidden from neighboring spaces.
+ - Computer-controlled player behavior is based on a random generator that can be fixed for testing purposes.
+ 
+ ## Limitations
+ 
+ - The neighbor detection algorithm uses a simple tolerance check; very complex mansion layouts might require a more robust solution.
+ - The graphical map generation uses basic AWT drawing and may not scale for large or highly detailed layouts.
+ - The computer-controlled player’s behavior is relatively simple and may not mimic strategic gameplay.
+ 
+ ## Design Changes
+ 
+ - **Computer-Controlled Players:**  
+   - Introduced the `ComputerPlayer` class that extends `Player` and implements automated actions.
+ - **Turn-Based System:**  
+   - Implemented a turn-based mechanism in `ControllerImpl` that alternates turns between players.
+ - **Movement Validation:**  
+   - Neighbor relationships are established in the `World` class to ensure players move only to adjacent spaces.
+ - **Graphical Map Generation:**  
+   - Added functionality in `World` to generate and save a PNG map of the mansion.
+ - **Target Character’s Pet:**  
+   - Added a pet for Doctor Lucky that is included in the room description.
+   - Implemented a command (`movepet`) to move the pet, and an extra credit wandering pet feature that uses DFS traversal.
+ - **Testability Enhancements:**  
+   - Many fields (such as the DFS path and pet index) have been changed to protected to facilitate unit testing.
+   - Decoupled file I/O from game logic using dummy worlds and mock implementations for testing.
+ 
+ ## Citations & References
+ 
+ - **Java SE API Documentation:**  
+   - [https://docs.oracle.com/en/java/javase/](https://docs.oracle.com/en/java/javase/)
+   - [java.awt package](https://docs.oracle.com/javase/8/docs/api/java/awt/package-summary.html)
+ - **JUnit 4 API Documentation:**  
+   - [https://junit.org/junit4/javadoc/latest/](https://junit.org/junit4/javadoc/latest/)
+ - **Design Patterns and Principles:**  
+   - Effective Java by Joshua Bloch
+   - Clean Code by Robert C. Martin
 
 Happy hunting—and may the best player kill Doctor Lucky first!
