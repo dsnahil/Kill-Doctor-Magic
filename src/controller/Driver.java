@@ -64,8 +64,8 @@ public class Driver {
         GameView view = new GameView();
 
         // show instructions dialog
-        String instructions = "<html>" + "<h2>Welcome to Kill Doctor Lucky!</h2>" + "<ul>"
-            + "<li>Each turn you may <b>Move</b>, <b>Pickup</b>, or <b>Attack</b> "
+        String instructions = "<html>" + "<h2>Welcome to Snahil's Kill Doctor Lucky Game!</h2>"
+            + "<ul>" + "<li>Each turn you may <b>Move</b>, <b>Pickup</b>, or <b>Attack</b> "
             + "(if you share a room with Doctor Lucky).</li>"
             + "<li>To attack successfully, Doctor Lucky must be unobserved by "
             + "any other player or the pet.</li>"

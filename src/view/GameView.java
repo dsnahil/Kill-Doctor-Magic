@@ -63,12 +63,10 @@ public class GameView extends JFrame implements Iview {
     super("Kill Doctor Lucky");
 
     // Load the background image (try PNG first, fall back to JPEG)
-    // First, try loading the PNG
     File backgroundFile = new File("res/spooky_bg.png");
     System.out.println("Looking for background image at: " + backgroundFile.getAbsolutePath());
     if (!backgroundFile.exists()) {
       System.err.println("Background image not found at: " + backgroundFile.getAbsolutePath());
-      // Fall back to trying the JPEG
       backgroundFile = new File("res/spooky_bg.jpeg");
       System.out.println("Falling back to JPEG at: " + backgroundFile.getAbsolutePath());
       if (!backgroundFile.exists()) {
