@@ -1,7 +1,7 @@
-# Kill Doctor Lucky
+# Kill Doctor Magic
 
 **Project Description:**  
-Kill Doctor Lucky is a text‑based, turn‑based game in which human and computer‑controlled players navigate a mansion, collect items, and attempt to kill the elusive target character—Doctor Lucky. The game features a dynamic mansion layout, a graphical world map generator, and a unique twist: Doctor Lucky’s pet, which affects room visibility and can be moved (or even wander automatically via a depth‑first search traversal).
+Kill Doctor Magic is a text‑based, turn‑based game in which human and computer‑controlled players navigate a mansion, collect items, and attempt to kill the elusive target character—Doctor Magic. The game features a dynamic mansion layout, a graphical world map generator, and a unique twist: Doctor Magic’s pet, which affects room visibility and can be moved (or even wander automatically via a depth‑first search traversal).
 
 ---
 
@@ -30,14 +30,14 @@ Kill Doctor Lucky is a text‑based, turn‑based game in which human and comput
 
 - **Look Around & Visibility:**  
   - `look` prints room details: coordinates, items, players present.  
-  - Neighbors marked “Not visible” if Doctor Lucky’s pet is present there.
+  - Neighbors marked “Not visible” if Doctor Magic’s pet is present there.
 
 - **Attack Logic:**  
-  - Must share a room with Doctor Lucky and be unseen by any other player or pet.  
+  - Must share a room with Doctor Magic and be unseen by any other player or pet.  
   - The computer picks the highest‑damage weapon automatically.
 
 - **Pet Mechanics:**  
-  - Pet starts with Doctor Lucky.  
+  - Pet starts with Doctor Magic.  
   - Affects visibility in neighbor descriptions.  
   - Can be moved manually (`movepet`) or wanders along a DFS path after each turn.
 
@@ -46,7 +46,7 @@ Kill Doctor Lucky is a text‑based, turn‑based game in which human and comput
   - Rooms are drawn with boundaries and labels.
 
 - **End Conditions:**  
-  - First player to reduce Doctor Lucky’s health to 0.  
+  - First player to reduce Doctor Magic’s health to 0.  
   - If max turns are reached, the game ends in a draw.
 
 ---
@@ -77,12 +77,12 @@ Kill Doctor Lucky is a text‑based, turn‑based game in which human and comput
 
 We now have **comprehensive** JUnit‑4 coverage of all non‑GUI code:
 
- JUnit 4 tests are located under the **test/killdoctorlucky/model/** directory and are organized by functionality:
+ JUnit 4 tests are located under the **test/killdoctorMagic/model/** directory and are organized by functionality:
  - **ControllerTest:** Tests the controller’s behavior (e.g., quitting the game).
  - **GameEndConditionsTest:** Checks game-ending conditions (target death, draw).
  - **PlayerAttackTest:** Verifies player attack functionality.
  - **PlayerTest:** Ensures proper behavior for movement, item pickup, and error handling.
- - **TargetCharacterTest:** Tests Doctor Lucky’s health management.
+ - **TargetCharacterTest:** Tests Doctor Magic’s health management.
  - **TestItemCreation:** Validates item creation and properties.
  - **WorldTest:** Confirms world initialization, space management, neighbor relationships, and map generation.
  - **Command Tests:** There are dedicated test classes (e.g., MoveCommandTest, LookCommandTest, DisplayPlayerCommandTest, SaveMapCommandTest, WanderingPetTest, PetVisibilityTest, etc.) that test each command’s behavior in isolation.
@@ -117,8 +117,8 @@ To run all tests:
 # If you use Maven/Gradle, just invoke `mvn test` or `gradle test`
 # Otherwise, from the project root:
 java -cp "bin:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar" org.junit.runner.JUnitCore \
-  killdoctorlucky.model.SpaceTest \
-  killdoctorlucky.model.PlayerTest \
+  killdoctorMagic.model.SpaceTest \
+  killdoctorMagic.model.PlayerTest \
   …<and so on>…
 
 
@@ -126,14 +126,14 @@ java -cp "bin:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar" org.junit.runner.JUn
 
 - **src/**  
    - **controller/** – Contains the game controller and command implementations.
-   - **killdoctorlucky/model/** – Contains the model classes (World, Player, TargetCharacter, Item, Pet, etc.).
+   - **killdoctorMagic/model/** – Contains the model classes (World, Player, TargetCharacter, Item, Pet, etc.).
    - **util/** – Contains utility classes (e.g., RandomGenerator).
    - **controller/commands/** - What commands are used.
  - **res/**  
    - Contains resource files such as `mansion.txt` (the mansion specification) and any additional assets (e.g., graphics JAR if used for map generation).
    - Contains sample run files (e.g., `run_visibility.txt`, `run_move_pet.txt`, etc.).
  - **test/**  
-   - Contains JUnit test classes in the package `killdoctorlucky.model`.
+   - Contains JUnit test classes in the package `killdoctorMagic.model`.
 └── README.md
 
 ## Design & Testability Notes
@@ -155,8 +155,8 @@ java -cp "bin:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar" org.junit.runner.JUn
  - The mansion file (`res/mansion.txt`) is well-formed and follows a consistent format.
  - Players are uniquely identified by their names.
  - Movement is only allowed to spaces that are adjacent, as defined by the neighbor relationships.
- - Doctor Lucky’s health is only modified by valid attacks.
- - The pet is initially placed with Doctor Lucky and is hidden from neighboring spaces.
+ - Doctor Magic’s health is only modified by valid attacks.
+ - The pet is initially placed with Doctor Magic and is hidden from neighboring spaces.
  - Computer-controlled player behavior is based on a random generator that can be fixed for testing purposes.
  
  ## Limitations
@@ -176,7 +176,7 @@ java -cp "bin:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar" org.junit.runner.JUn
  - **Graphical Map Generation:**  
    - Added functionality in `World` to generate and save a PNG map of the mansion.
  - **Target Character’s Pet:**  
-   - Added a pet for Doctor Lucky that is included in the room description.
+   - Added a pet for Doctor Magic that is included in the room description.
    - Implemented a command (`movepet`) to move the pet, and an extra credit wandering pet feature that uses DFS traversal.
  - **Testability Enhancements:**  
    - Many fields (such as the DFS path and pet index) have been changed to protected to facilitate unit testing.
@@ -193,4 +193,4 @@ java -cp "bin:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar" org.junit.runner.JUn
    - Effective Java by Joshua Bloch
    - Clean Code by Robert C. Martin
 
-Happy hunting—and may the best player kill Doctor Lucky first!
+Happy hunting—and may the best player kill Doctor Magic first!
